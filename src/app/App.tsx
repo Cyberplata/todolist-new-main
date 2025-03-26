@@ -1,27 +1,30 @@
 import "./App.css"
+import MenuIcon from "@mui/icons-material/Menu"
+import AppBar from "@mui/material/AppBar"
+import Container from "@mui/material/Container"
+import CssBaseline from "@mui/material/CssBaseline"
+import Grid from "@mui/material/Grid2"
+import IconButton from "@mui/material/IconButton"
+import Paper from "@mui/material/Paper"
 import { createTheme, ThemeProvider } from "@mui/material/styles"
-import { useReducer, useState } from "react"
-import { CreateItemForm } from "./CreateItemForm"
-import { changeTaskStatusAC, changeTaskTitleAC, createTaskAC, deleteTaskAC, tasksReducer } from "./model/tasks-reducer"
+import Switch from "@mui/material/Switch"
+import Toolbar from "@mui/material/Toolbar"
+import { useState } from "react"
+import { useAppDispatch } from "../common/hooks/useAppDispatch.ts"
+import { useAppSelector } from "../common/hooks/useAppSelector.ts"
+import { CreateItemForm } from "../CreateItemForm.tsx"
+import { changeTaskStatusAC, changeTaskTitleAC, createTaskAC, deleteTaskAC } from "../model/tasks-reducer.ts"
+import { selectTasks } from "../model/tasks-selectors.ts"
 import {
   changeTodolistFilterAC,
   changeTodolistTitleAC,
   createTodolistAC,
   deleteTodolistAC,
-  todolistsReducer,
-} from "./model/todolists-reducer"
-import { TodolistItem } from "./TodolistItem"
-import AppBar from "@mui/material/AppBar"
-import Toolbar from "@mui/material/Toolbar"
-import IconButton from "@mui/material/IconButton"
-import MenuIcon from "@mui/icons-material/Menu"
-import Container from "@mui/material/Container"
-import Grid from "@mui/material/Grid2"
-import Paper from "@mui/material/Paper"
-import Switch from "@mui/material/Switch"
-import CssBaseline from "@mui/material/CssBaseline"
-import { containerSx } from "./TodolistItem.styles"
-import { NavButton } from "./NavButton"
+} from "../model/todolists-reducer.ts"
+import { selectTodolists } from "../model/todolists-selectors.ts"
+import { NavButton } from "../NavButton.ts"
+import { containerSx } from "../TodolistItem.styles.ts"
+import { TodolistItem } from "../TodolistItem.tsx"
 
 export type Todolist = {
   id: string
@@ -42,8 +45,10 @@ export type TasksState = Record<string, Task[]>
 type ThemeMode = "dark" | "light"
 
 export const App = () => {
-  const [todolists, dispatchToTodolists] = useReducer(todolistsReducer, [])
-  const [tasks, dispatchToTasks] = useReducer(tasksReducer, {})
+  const todolists = useAppSelector(selectTodolists)
+  const tasks = useAppSelector(selectTasks)
+
+  const dispatch = useAppDispatch()
 
   const [themeMode, setThemeMode] = useState<ThemeMode>("light")
 
@@ -61,39 +66,37 @@ export const App = () => {
   }
 
   const changeFilter = (todolistId: string, filter: FilterValues) => {
-    dispatchToTodolists(changeTodolistFilterAC({ id: todolistId, filter }))
+    dispatch(changeTodolistFilterAC({ id: todolistId, filter }))
   }
 
   const createTodolist = (title: string) => {
     const action = createTodolistAC(title)
-    dispatchToTodolists(action)
-    dispatchToTasks(action)
+    dispatch(action)
   }
 
   const deleteTodolist = (todolistId: string) => {
-    const action = deleteTodolistAC(todolistId)
-    dispatchToTodolists(action)
-    dispatchToTasks(action)
+    const action = deleteTodolistAC({ id: todolistId })
+    dispatch(action)
   }
 
   const changeTodolistTitle = (todolistId: string, title: string) => {
-    dispatchToTodolists(changeTodolistTitleAC({ id: todolistId, title }))
+    dispatch(changeTodolistTitleAC({ id: todolistId, title }))
   }
 
   const deleteTask = (todolistId: string, taskId: string) => {
-    dispatchToTasks(deleteTaskAC({ todolistId, taskId }))
+    dispatch(deleteTaskAC({ todolistId, taskId }))
   }
 
   const createTask = (todolistId: string, title: string) => {
-    dispatchToTasks(createTaskAC({ todolistId, title }))
+    dispatch(createTaskAC({ todolistId, title }))
   }
 
   const changeTaskStatus = (todolistId: string, taskId: string, isDone: boolean) => {
-    dispatchToTasks(changeTaskStatusAC({ todolistId, taskId, isDone }))
+    dispatch(changeTaskStatusAC({ todolistId, taskId, isDone }))
   }
 
   const changeTaskTitle = (todolistId: string, taskId: string, title: string) => {
-    dispatchToTasks(changeTaskTitleAC({ todolistId, taskId, title }))
+    dispatch(changeTaskTitleAC({ todolistId, taskId, title }))
   }
 
   return (
