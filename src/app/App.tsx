@@ -1,4 +1,5 @@
 import "./App.css"
+import { Header } from "@/common/components/Header/Header.tsx"
 import MenuIcon from "@mui/icons-material/Menu"
 import AppBar from "@mui/material/AppBar"
 import Container from "@mui/material/Container"
@@ -51,13 +52,9 @@ export const App = () => {
   const tasks = useAppSelector(selectTasks)
   const themeMode = useAppSelector(selectThemeMode)
 
-  const dispatch = useAppDispatch()
-
   const theme = getTheme(themeMode)
 
-  const changeMode = () => {
-    dispatch(changeThemeModeAC({ themeMode: themeMode === "light" ? "dark" : "light" }))
-  }
+  const dispatch = useAppDispatch()
 
   const changeFilter = (todolistId: string, filter: FilterValues) => {
     dispatch(changeTodolistFilterAC({ id: todolistId, filter }))
@@ -95,21 +92,7 @@ export const App = () => {
     <ThemeProvider theme={theme}>
       <div className={"app"}>
         <CssBaseline />
-        <AppBar position="static" sx={{ mb: "30px" }}>
-          <Toolbar>
-            <Container maxWidth={"lg"} sx={containerSx}>
-              <IconButton color="inherit">
-                <MenuIcon />
-              </IconButton>
-              <div>
-                <NavButton>Sign in</NavButton>
-                <NavButton>Sign up</NavButton>
-                <NavButton background={theme.palette.primary.dark}>Faq</NavButton>
-                <Switch color={"default"} onChange={changeMode} />
-              </div>
-            </Container>
-          </Toolbar>
-        </AppBar>
+        <Header/>
         <Container maxWidth={"lg"}>
           <Grid container sx={{ mb: "30px" }}>
             <CreateItemForm onCreateItem={createTodolist} />
