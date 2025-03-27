@@ -11,6 +11,7 @@ export const changeTodolistFilterAC = createAction<{ id: string; filter: FilterV
 )
 
 const initialState: Todolist[] = []
+
 export const todolistsReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(deleteTodolistAC, (state, action) => {
