@@ -40,7 +40,7 @@ test("correct task should be created at correct array", () => {
   const endState = tasksReducer(
     startState,
     createTaskAC({
-      todolistId: "todolistId2",
+      id: "todolistId2",
       title: "juice",
     }),
   )
