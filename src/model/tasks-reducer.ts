@@ -1,5 +1,5 @@
 import { createAction, createReducer, nanoid } from "@reduxjs/toolkit"
-import type { Task, TasksState } from "../app/App.tsx"
+import type { TasksState } from "../app/App.tsx"
 import { createTodolistAC, deleteTodolistAC } from "./todolists-reducer"
 
 export const deleteTaskAC = createAction<{ todolistId: string; taskId: string }>("tasks/deleteTask")
@@ -15,6 +15,13 @@ export const changeTaskTitleAC = createAction<{
   title: string
 }>("tasks/changeTaskTitle")
 
+export type Task = {
+  id: string
+  title: string
+  isDone: boolean
+}
+export type TasksState = Record<string, Task[]>
+
 const initialState: TasksState = {}
 
 export const tasksReducer = createReducer(initialState, (builder) => {
@@ -27,36 +34,28 @@ export const tasksReducer = createReducer(initialState, (builder) => {
     })
     .addCase(deleteTaskAC, (state, action) => {
       const tasks = state[action.payload.todolistId]
-      if (tasks) {
-        const index = tasks.findIndex((task) => task.id === action.payload.taskId)
-        if (index !== -1) {
-          tasks.splice(index, 1)
-        }
+      const index = tasks.findIndex((task) => task.id === action.payload.taskId)
+      if (index !== -1) {
+        tasks.splice(index, 1)
       }
     })
     .addCase(createTaskAC, (state, action) => {
       const tasks = state[action.payload.todolistId]
-      if (tasks) {
-        const newTask: Task = { title: action.payload.title, id: nanoid(), isDone: false }
-        tasks.unshift(newTask)
-      }
+      const newTask: Task = { title: action.payload.title, id: nanoid(), isDone: false }
+      tasks.unshift(newTask)
     })
     .addCase(changeTaskStatusAC, (state, action) => {
       const tasks = state[action.payload.todolistId]
-      if (tasks) {
-        const task = tasks.find((task) => task.id === action.payload.taskId)
-        if (task) {
-          task.isDone = action.payload.isDone
-        }
+      const task = tasks.find((task) => task.id === action.payload.taskId)
+      if (task) {
+        task.isDone = action.payload.isDone
       }
     })
     .addCase(changeTaskTitleAC, (state, action) => {
       const tasks = state[action.payload.todolistId]
-      if (tasks) {
-        const task = tasks.find((task) => task.id === action.payload.taskId)
-        if (task) {
-          task.title = action.payload.title
-        }
+      const task = tasks.find((task) => task.id === action.payload.taskId)
+      if (task) {
+        task.title = action.payload.title
       }
     })
 })
