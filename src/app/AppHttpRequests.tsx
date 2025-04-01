@@ -10,11 +10,11 @@ export const AppHttpRequests = () => {
 
   useEffect(() => {
     // get todolists
-    todolistsApi.getTodolists().then(res => setTodolists(res.data))
+    todolistsApi.getTodolists().then((res) => setTodolists(res.data))
   }, [])
 
   const createTodolist = (title: string) => {
-    todolistsApi.createTodolist(title).then(res => {
+    todolistsApi.createTodolist(title).then((res) => {
       const newTodolist = res.data.data.item
       setTodolists([newTodolist, ...todolists])
     })
@@ -22,31 +22,24 @@ export const AppHttpRequests = () => {
 
   const deleteTodolist = (id: string) => {
     todolistsApi.deleteTodolist(id).then(() => {
-      setTodolists(prevTodolists => prevTodolists.filter(todolist => todolist.id !== id))
+      setTodolists((prevTodolists) => prevTodolists.filter((todolist) => todolist.id !== id))
       // setTodolists(todolists.filter(todolist => todolist.id !== id))
     })
   }
 
   const changeTodolistTitle = (id: string, title: string) => {
     todolistsApi.changeTodolistTitle({ id, title }).then(() => {
-      setTodolists(todolists.map(todolist => todolist.id === id ?
-        { ...todolist, title }
-        : todolist
-      ))
+      setTodolists(todolists.map((todolist) => (todolist.id === id ? { ...todolist, title } : todolist)))
     })
   }
 
-  const createTask = (todolistId: string, title: string) => {
-  }
+  const createTask = (todolistId: string, title: string) => {}
 
-  const deleteTask = (todolistId: string, taskId: string) => {
-  }
+  const deleteTask = (todolistId: string, taskId: string) => {}
 
-  const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>, task: any) => {
-  }
+  const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>, task: any) => {}
 
-  const changeTaskTitle = (task: any, title: string) => {
-  }
+  const changeTaskTitle = (task: any, title: string) => {}
 
   return (
     <div style={{ margin: "20px" }}>
@@ -54,17 +47,14 @@ export const AppHttpRequests = () => {
       {todolists.map((todolist) => (
         <div key={todolist.id} style={container}>
           <div>
-            <EditableSpan value={todolist.title}
-                          onChange={title => changeTodolistTitle(todolist.id, title)} />
+            <EditableSpan value={todolist.title} onChange={(title) => changeTodolistTitle(todolist.id, title)} />
             <button onClick={() => deleteTodolist(todolist.id)}>x</button>
           </div>
-          <CreateItemForm onCreateItem={title => createTask(todolist.id, title)} />
+          <CreateItemForm onCreateItem={(title) => createTask(todolist.id, title)} />
           {tasks[todolist.id]?.map((task: any) => (
             <div key={task.id}>
-              <Checkbox checked={task.isDone}
-                        onChange={e => changeTaskStatus(e, task)} />
-              <EditableSpan value={task.title}
-                            onChange={title => changeTaskTitle(task, title)} />
+              <Checkbox checked={task.isDone} onChange={(e) => changeTaskStatus(e, task)} />
+              <EditableSpan value={task.title} onChange={(title) => changeTaskTitle(task, title)} />
               <button onClick={() => deleteTask(todolist.id, task.id)}>x</button>
             </div>
           ))}
@@ -81,5 +71,5 @@ const container: CSSProperties = {
   width: "300px",
   display: "flex",
   justifyContent: "space-between",
-  flexDirection: "column"
+  flexDirection: "column",
 }
