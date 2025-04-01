@@ -1,6 +1,4 @@
 import { CreateItemForm, EditableSpan } from "@/common/components"
-import { instance } from "@/common/instance/instance.ts"
-import type { BaseResponse } from "@/common/types"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 import Checkbox from "@mui/material/Checkbox"

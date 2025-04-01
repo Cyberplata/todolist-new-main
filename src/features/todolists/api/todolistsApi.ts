@@ -1,4 +1,4 @@
-import { instance } from "@/common/instance/instance.ts"
+import { instance } from "@/common/instance"
 import type { BaseResponse } from "@/common/types"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 
