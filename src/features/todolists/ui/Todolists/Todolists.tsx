@@ -14,9 +14,9 @@ export const Todolists = () => {
 
   useEffect(() => {
     todolistsApi.getTodolists().then((res) => {
-      const todolists = res.data
-      console.log(todolists)
-      dispatch(setTodolistsAC({ todolists }))
+      // const todolists = res.data
+      // console.log(todolists)
+      dispatch(setTodolistsAC({ todolists: res.data }))
     })
   }, [])
 
