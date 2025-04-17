@@ -1,20 +1,53 @@
+import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 import { createSlice, nanoid } from "@reduxjs/toolkit"
-
-// export const deleteTodolistAC = createAction<{ id: string }>("todolists/deleteTodolist")
-// export const createTodolistAC = createAction("todolists/createTodolist", (title: string) => {
-//   return { payload: { title, id: nanoid() } }
-// })
-// export const changeTodolistTitleAC = createAction<{ id: string; title: string }>("todolists/changeTodolistTitle")
-// export const changeTodolistFilterAC = createAction<{ id: string; filter: FilterValues }>(
-//   "todolists/changeTodolistFilter",
-// )
-
-// const initialState: Todolist[] = []
 
 export const todolistsSlice = createSlice({
   name: "todolists",
-  initialState: [] as Todolist[],
+  initialState: [] as DomainTodolist[],
   reducers: (create) => ({
+    setTodolistsAC: create.reducer<{ todolists: Todolist[] }>((state, action) => {
+      // var 1
+      action.payload.todolists.forEach((tl) => {
+        state.push({ ...tl, filter: "all" })
+      })
+      // var 2
+      // return action.payload.todolists.map((tl) => {
+      //   return {...tl, filter: 'all'}
+      // })
+    }),
+    // var 1
+    // createTodolistAC: create.preparedReducer(
+    //   (title: string) => ({
+    //     payload: {
+    //       title,
+    //       id: nanoid(),
+    //     },
+    //   }),
+    //   (state, action) => {
+    //     state.push({ ...action.payload, filter: 'all', addedDate: '', order: 0 })
+    //   },
+    // ),
+    // var 2
+    createTodolistAC: create.preparedReducer(
+      (title: string) => {
+        return {
+          payload: {
+            title,
+            id: nanoid(),
+          },
+        }
+      },
+      (state, action) => {
+        const newTodolists: DomainTodolist = {
+          title: action.payload.title,
+          id: action.payload.id,
+          filter: "all",
+          addedDate: "",
+          order: 0,
+        }
+        state.push(newTodolists)
+      },
+    ),
     deleteTodolistAC: create.reducer<{ id: string }>((state, action) => {
       const index = state.findIndex((todolist) => todolist.id === action.payload.id)
       if (index !== -1) {
@@ -33,53 +66,15 @@ export const todolistsSlice = createSlice({
         todolist.filter = action.payload.filter
       }
     }),
-    createTodolistAC: create.preparedReducer(
-      (title: string) => ({
-        payload: {
-          title,
-          id: nanoid(),
-        },
-      }),
-      (state, action) => {
-        state.push({ ...action.payload, filter: "all" })
-      },
-    ),
   }),
 })
 
-export const { deleteTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC, createTodolistAC } =
+export const { setTodolistsAC, deleteTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC, createTodolistAC } =
   todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
 
-export type Todolist = {
-  id: string
-  title: string
+export type DomainTodolist = Todolist & {
   filter: FilterValues
 }
 
 export type FilterValues = "all" | "active" | "completed"
-
-/*export const _todolistsReducer = createReducer(initialState, (builder) => {
-  builder
-    // .addCase(deleteTodolistAC, (state, action) => {
-    //   const index = state.findIndex((todolist) => todolist.id === action.payload.id)
-    //   if (index !== -1) {
-    //     state.splice(index, 1)
-    //   }
-    // })
-    // .addCase(createTodolistAC, (state, action) => {
-    //   state.push({ ...action.payload, filter: "all" })
-    // })
-  // .addCase(changeTodolistTitleAC, (state, action) => {
-  //   const index = state.findIndex((todolist) => todolist.id === action.payload.id)
-  //   if (index !== -1) {
-  //     state[index].title = action.payload.title
-  //   }
-  // })
-  // .addCase(changeTodolistFilterAC, (state, action) => {
-  //   const todolist = state.find((todolist) => todolist.id === action.payload.id)
-  //   if (todolist) {
-  //     todolist.filter = action.payload.filter
-  //   }
-  // })
-})*/
