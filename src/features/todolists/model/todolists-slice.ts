@@ -51,6 +51,14 @@ export const { deleteTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC, 
   todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
 
+export type Todolist = {
+  id: string
+  title: string
+  filter: FilterValues
+}
+
+export type FilterValues = "all" | "active" | "completed"
+
 /*export const _todolistsReducer = createReducer(initialState, (builder) => {
   builder
     // .addCase(deleteTodolistAC, (state, action) => {
@@ -75,11 +83,3 @@ export const todolistsReducer = todolistsSlice.reducer
   //   }
   // })
 })*/
-
-export type Todolist = {
-  id: string
-  title: string
-  filter: FilterValues
-}
-
-export type FilterValues = "all" | "active" | "completed"

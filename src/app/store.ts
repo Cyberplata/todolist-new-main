@@ -1,5 +1,5 @@
 import { appReducer } from "@/app/app-slice.ts"
-import { tasksReducer } from "@/features/todolists/model/tasks-reducer"
+import { tasksReducer } from "@/features/todolists/model/tasks-slice.ts"
 import { todolistsReducer } from "@/features/todolists/model/todolists-slice.ts"
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
 
