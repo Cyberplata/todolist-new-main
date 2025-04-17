@@ -1,5 +1,5 @@
-import { changeThemeModeAC } from "@/app/app-reducer"
 import { selectThemeMode } from "@/app/app-selectors"
+import { changeThemeModeAC } from "@/app/app-slice.ts"
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { containerSx } from "@/common/styles"
 import { NavButton } from "@/common/components/NavButton/NavButton"

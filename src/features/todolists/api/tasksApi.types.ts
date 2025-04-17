@@ -1,12 +1,12 @@
 import { TaskPriority, TaskStatus } from "@/common/enums"
 
 export type DomainTask = {
-  description: string
+  description: string | null
   title: string
   status: TaskStatus
   priority: TaskPriority
-  startDate: string
-  deadline: string
+  startDate: string | null
+  deadline: string | null
   id: string
   todoListId: string
   order: number
@@ -20,10 +20,10 @@ export type GetTasksResponse = {
 }
 
 export type UpdateTaskModel = {
-  description: string
+  description: string | null
   title: string
   status: TaskStatus
   priority: TaskPriority
-  startDate: string
-  deadline: string
+  startDate: string | null
+  deadline: string | null
 }

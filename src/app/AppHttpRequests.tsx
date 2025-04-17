@@ -12,7 +12,6 @@ export const AppHttpRequests = () => {
   const [tasks, setTasks] = useState<Record<string, DomainTask[]>>({})
 
   useEffect(() => {
-    // get todolists
     todolistsApi.getTodolists().then((res) => {
       const todolists = res.data
       setTodolists(todolists)
@@ -29,13 +28,19 @@ export const AppHttpRequests = () => {
     todolistsApi.createTodolist(title).then((res) => {
       const newTodolist = res.data.data.item
       // setTodolists([newTodolist, ...todolists])
-      setTodolists((prevTodolists) => [...prevTodolists, newTodolist])
+      // setTodolists((prevTodolists) => [newTodolist, ...prevTodolists])
+      setTodolists([newTodolist, ...todolists])
+      setTasks({ ...tasks, [newTodolist.id]: [] })
     })
   }
 
   const deleteTodolist = (id: string) => {
     todolistsApi.deleteTodolist(id).then(() => {
-      setTodolists((prevTodolists) => prevTodolists.filter((todolist) => todolist.id !== id))
+      setTodolists(todolists.filter((todolist) => todolist.id !== id))
+      delete tasks[id]
+      setTasks({ ...tasks })
+
+      // setTodolists((prevTodolists) => prevTodolists.filter((todolist) => todolist.id !== id))
       // setTodolists(todolists.filter(todolist => todolist.id !== id))
     })
   }
@@ -50,11 +55,11 @@ export const AppHttpRequests = () => {
   const createTask = (todolistId: string, title: string) => {
     tasksApi.createTask({ todolistId, title }).then((res) => {
       const newTask = res.data.data.item
-      setTasks((prevTasks) => ({
-        ...prevTasks,
-        [todolistId]: [newTask, ...(prevTasks[todolistId] || [])],
-        // [todolistId]: [res.data.data.item, ...(prevTasks[todolistId] || [])],
-      }))
+      // setTasks((prevTasks) => ({
+      //   ...prevTasks,
+      //   [todolistId]: [newTask, ...(prevTasks[todolistId] || [])],
+      // }))
+      setTasks({ ...tasks, [todolistId]: [newTask, ...tasks[todolistId]] })
     })
   }
 
