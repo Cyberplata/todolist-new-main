@@ -5,6 +5,13 @@ import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit"
 export const todolistsSlice = createSlice({
   name: "todolists",
   initialState: [] as DomainTodolist[],
+  // extraReducers: (builder) => {
+  //   builder.addCase(fetchTodolistsTC.fulfilled, (state, action) => {
+  //     action.payload?.todolists.forEach((tl) => {
+  //       state.push({ ...tl, filter: "all" })
+  //     })
+  //   })
+  // },
   reducers: (create) => ({
     setTodolistsAC: create.reducer<{ todolists: Todolist[] }>((state, action) => {
       // var 1
@@ -74,13 +81,10 @@ export const { setTodolistsAC, deleteTodolistAC, changeTodolistTitleAC, changeTo
   todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
 
-export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTodolistsTC`, (_arg, thunkAPI) => {
+export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTodolistsTC`, async (_arg, thunkAPI) => {
   try {
-    // в санке можно делать побочные эффекты (запросы на сервер)
-    todolistsApi.getTodolists().then((res) => {
-      // и диспатчить экшены (action) или другие санки (thunk)
-      thunkAPI.dispatch(setTodolistsAC({ todolists: res.data }))
-    })
+    const res = await todolistsApi.getTodolists()
+    thunkAPI.dispatch(setTodolistsAC({ todolists: res.data }))
   } catch (error) {
     console.log(error)
   }
