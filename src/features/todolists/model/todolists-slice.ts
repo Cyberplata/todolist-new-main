@@ -1,5 +1,6 @@
+import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
-import { createSlice, nanoid } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit"
 
 export const todolistsSlice = createSlice({
   name: "todolists",
@@ -72,6 +73,18 @@ export const todolistsSlice = createSlice({
 export const { setTodolistsAC, deleteTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC, createTodolistAC } =
   todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
+
+export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTodolistsTC`, (_arg, thunkAPI) => {
+  try {
+    // в санке можно делать побочные эффекты (запросы на сервер)
+    todolistsApi.getTodolists().then((res) => {
+      // и диспатчить экшены (action) или другие санки (thunk)
+      thunkAPI.dispatch(setTodolistsAC({ todolists: res.data }))
+    })
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 export type DomainTodolist = Todolist & {
   filter: FilterValues
