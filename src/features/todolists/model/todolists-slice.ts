@@ -5,26 +5,6 @@ import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit"
 export const todolistsSlice = createSlice({
   name: "todolists",
   initialState: [] as DomainTodolist[],
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchTodolistsTC.fulfilled, (state, action) => {
-        action.payload?.todolists.forEach((tl) => {
-          state.push({ ...tl, filter: "all" })
-        })
-      })
-      .addCase(fetchTodolistsTC.rejected, (state, action) => {
-        // обработка ошибки при запросе за тудулистами
-      })
-      .addCase(changeTodolistTitleTC.fulfilled, (state, action) => {
-        const index = state.findIndex((todolist) => todolist.id === action.payload.id)
-        if (index !== -1) {
-          state[index].title = action.payload.title
-        }
-      })
-      .addCase(changeTodolistTitleTC.rejected, (state, action) => {
-        // обработка ошибки при запросе на смену имени тудулиста
-      })
-  },
   reducers: (create) => ({
     // var 1
     // createTodolistAC: create.preparedReducer(
@@ -72,30 +52,81 @@ export const todolistsSlice = createSlice({
       }
     }),
   }),
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTodolistsTC.fulfilled, (state, action) => {
+        action.payload?.todolists.forEach((tl) => {
+          state.push({ ...tl, filter: "all" })
+        })
+      })
+      .addCase(fetchTodolistsTC.rejected, (state, action) => {
+        // обработка ошибки при запросе за тудулистами
+      })
+      .addCase(changeTodolistTitleTC.fulfilled, (state, action) => {
+        const index = state.findIndex((todolist) => todolist.id === action.payload.id)
+        if (index !== -1) {
+          state[index].title = action.payload.title
+        }
+      })
+      .addCase(changeTodolistTitleTC.rejected, (state, action) => {
+        // обработка ошибки при запросе на смену имени тудулиста
+      })
+  },
+  selectors: {
+    selectTodolists: (state) => state,
+  },
 })
 
 // Thunks creators
-export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTodolistsTC`, async (_arg, thunkAPI) => {
+export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTodolistsTC`, async (_, thunkAPI) => {
+  const { rejectWithValue } = thunkAPI
   try {
     const res = await todolistsApi.getTodolists()
     return { todolists: res.data }
   } catch (error) {
-    return thunkAPI.rejectWithValue(null)
+    return rejectWithValue(null)
   }
 })
 
-export const changeTodolistTitleTC = createAsyncThunk(`${todolistsSlice.name}/changeTodolistTitleTC`, async (payload: { id: string; title: string }, thunkAPI) => {
-  try {
-    await todolistsApi.changeTodolistTitle(payload)
-    return payload
-  } catch (error) {
-    return thunkAPI.rejectWithValue(null)
-  }
-})
+export const changeTodolistTitleTC = createAsyncThunk(
+  `${todolistsSlice.name}/changeTodolistTitleTC`,
+  async (
+    payload: {
+      id: string
+      title: string
+    },
+    thunkAPI,
+  ) => {
+    const { rejectWithValue } = thunkAPI
+    try {
+      await todolistsApi.changeTodolistTitle(payload)
+      return payload
+    } catch (error) {
+      return rejectWithValue(null)
+    }
+  },
+)
 
-export const { deleteTodolistAC, changeTodolistFilterAC, createTodolistAC } =
-  todolistsSlice.actions
+export const createTodolistTC = createAsyncThunk(
+  `${todolistsSlice.name}/createTodolistTC`,
+  async (title: string, thunkAPI) => {
+    const { dispatch, rejectWithValue } = thunkAPI
+    try {
+      await todolistsApi.createTodolist(title)
+      dispatch(createTodolistAC(title))
+      // .then((res) => {
+      // const newTodolist = res.data.data.item
+      // setTodolists([newTodolist, ...todolists])
+      // setTasks({ ...tasks, [newTodolist.id]: [] })
+    } catch (error) {
+      return rejectWithValue(null)
+    }
+  },
+)
+
+export const { deleteTodolistAC, changeTodolistFilterAC, createTodolistAC } = todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
+export const { selectTodolists } = todolistsSlice.selectors
 
 export type DomainTodolist = Todolist & {
   filter: FilterValues

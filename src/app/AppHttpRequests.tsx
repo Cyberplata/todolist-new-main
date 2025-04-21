@@ -11,18 +11,18 @@ export const AppHttpRequests = () => {
   const [todolists, setTodolists] = useState<Todolist[]>([])
   const [tasks, setTasks] = useState<Record<string, DomainTask[]>>({})
 
-  useEffect(() => {
-    todolistsApi.getTodolists().then((res) => {
-      const todolists = res.data
-      setTodolists(todolists)
-      todolists.forEach((todolist) => {
-        tasksApi.getTasks(todolist.id).then((res) => {
-          const newTasks = res.data.items
-          setTasks((prevTasks) => ({ ...prevTasks, [todolist.id]: newTasks }))
-        })
-      })
-    })
-  }, [])
+  // useEffect(() => {
+  //   todolistsApi.getTodolists().then((res) => {
+  //     const todolists = res.data
+  //     setTodolists(todolists)
+  //     todolists.forEach((todolist) => {
+  //       tasksApi.getTasks(todolist.id).then((res) => {
+  //         const newTasks = res.data.items
+  //         setTasks((prevTasks) => ({ ...prevTasks, [todolist.id]: newTasks }))
+  //       })
+  //     })
+  //   })
+  // }, [])
 
   const createTodolist = (title: string) => {
     todolistsApi.createTodolist(title).then((res) => {
@@ -45,12 +45,12 @@ export const AppHttpRequests = () => {
     })
   }
 
-  const changeTodolistTitle = (id: string, title: string) => {
-    todolistsApi.changeTodolistTitle({ id, title }).then(() => {
-      // setTodolists(todolists.map((todolist) => (todolist.id === id ? { ...todolist, title } : todolist)))
-      setTodolists((prevTodolists) => prevTodolists.map((tl) => (tl.id === id ? { ...tl, title } : tl)))
-    })
-  }
+  // const changeTodolistTitle = (id: string, title: string) => {
+  //   todolistsApi.changeTodolistTitle({ id, title }).then(() => {
+  //     // setTodolists(todolists.map((todolist) => (todolist.id === id ? { ...todolist, title } : todolist)))
+  //     setTodolists((prevTodolists) => prevTodolists.map((tl) => (tl.id === id ? { ...tl, title } : tl)))
+  //   })
+  // }
 
   const createTask = (todolistId: string, title: string) => {
     tasksApi.createTask({ todolistId, title }).then((res) => {

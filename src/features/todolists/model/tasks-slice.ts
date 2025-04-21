@@ -38,11 +38,15 @@ export const tasksSlice = createSlice({
         delete state[action.payload.id]
       })
   },
+  selectors: {
+    selectTasks: (state) => state,
+  },
 })
 
 export const { deleteTaskAC, createTaskAC, changeTaskStatusAC, changeTaskTitleAC } = tasksSlice.actions
 
 export const tasksReducer = tasksSlice.reducer
+export const { selectTasks } = tasksSlice.selectors
 
 export type Task = {
   id: string
