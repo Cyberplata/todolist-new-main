@@ -9,6 +9,7 @@ export const Main = () => {
   const dispatch = useAppDispatch()
 
   const createTodolist = (title: string) => {
+    debugger
     dispatch(createTodolistTC(title))
   }
 

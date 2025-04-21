@@ -5,7 +5,7 @@ import type { DomainTask, UpdateTaskModel } from "@/features/todolists/api/tasks
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 import Checkbox from "@mui/material/Checkbox"
-import { type ChangeEvent, type CSSProperties, useEffect, useState } from "react"
+import { type ChangeEvent, type CSSProperties, useState } from "react"
 
 export const AppHttpRequests = () => {
   const [todolists, setTodolists] = useState<Todolist[]>([])
