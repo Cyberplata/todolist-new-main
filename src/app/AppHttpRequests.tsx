@@ -24,15 +24,15 @@ export const AppHttpRequests = () => {
   //   })
   // }, [])
 
-  const createTodolist = (title: string) => {
-    todolistsApi.createTodolist(title).then((res) => {
-      const newTodolist = res.data.data.item
-      // setTodolists([newTodolist, ...todolists])
-      // setTodolists((prevTodolists) => [newTodolist, ...prevTodolists])
-      setTodolists([newTodolist, ...todolists])
-      setTasks({ ...tasks, [newTodolist.id]: [] })
-    })
-  }
+  // const createTodolist = (title: string) => {
+  //   todolistsApi.createTodolist(title).then((res) => {
+  //     const newTodolist = res.data.data.item
+  //     // setTodolists([newTodolist, ...todolists])
+  //     // setTodolists((prevTodolists) => [newTodolist, ...prevTodolists])
+  //     setTodolists([newTodolist, ...todolists])
+  //     setTasks({ ...tasks, [newTodolist.id]: [] })
+  //   })
+  // }
 
   const deleteTodolist = (id: string) => {
     todolistsApi.deleteTodolist(id).then(() => {
