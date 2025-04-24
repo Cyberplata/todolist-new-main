@@ -23,6 +23,7 @@ export const TaskItem = ({ task, todolistId }: Props) => {
   }
 
   const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>) => {
+    // var1 - getState()
     // const newStatusValue = e.currentTarget.checked
     // dispatch(
     //   changeTaskStatusTC({
@@ -32,6 +33,7 @@ export const TaskItem = ({ task, todolistId }: Props) => {
     //   }),
     // )
 
+    // var 2 - task
     const newStatusValue = e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New
     const newTask = { ...task, status: newStatusValue}
     dispatch(changeTaskStatusTC(newTask))

@@ -66,7 +66,7 @@ export const tasksSlice = createAppSlice({
         },
       },
     ),
-    // Решение через getState()
+    // var1 - Решение через getState()
     _changeTaskStatusTC: create.asyncThunk(
       async (payload: { todolistId: string; taskId: string; status: TaskStatus }, thunkAPI) => {
         const { todolistId, taskId, status } = payload
@@ -106,22 +106,43 @@ export const tasksSlice = createAppSlice({
         },
       },
     ),
-    // Решение через передачу task через props в TaskItem в changeTaskStatusTC
-    changeTaskStatusTC: create.asyncThunk(
+    // var2 - Решение через передачу task через props в TaskItem в changeTaskStatusTC
+    __changeTaskStatusTC: create.asyncThunk(
       async (task: DomainTask, { rejectWithValue }) => {
-        const { todoListId, id } = task
+        const { todoListId, id, description, title, priority, startDate, deadline, status } = task
 
         const model: UpdateTaskModel = {
-          description: task.description,
-          title: task.title,
-          priority: task.priority,
-          startDate: task.startDate,
-          deadline: task.deadline,
-          status: task.status,
+          description,
+          title,
+          priority,
+          startDate,
+          deadline,
+          status,
         }
 
         try {
           const res = await tasksApi.updateTask({ todolistId: todoListId, taskId: id, model })
+          const newTask = res.data.data.item
+          return { task: newTask }
+        } catch (error) {
+          return rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          const newTask = action.payload.task
+          const task = state[newTask.todoListId].find((task) => task.id === newTask.id)
+          if (task) {
+            task.status = newTask.status
+          }
+        },
+      },
+    ),
+    // var3 - передаём всю task в model, так как бэк позволяет, хотя должен выдать ошибку
+    changeTaskStatusTC: create.asyncThunk(
+      async (task: DomainTask, { rejectWithValue }) => {
+        try {
+          const res = await tasksApi.updateTask({ todolistId: task.todoListId, taskId: task.id, model: task })
           const newTask = res.data.data.item
           return { task: newTask }
         } catch (error) {
