@@ -35,6 +35,30 @@ export const todolistsSlice = createAppSlice({
         },
       },
     ),
+    createTodolistTC: create.asyncThunk(
+      async (title: string, thunkAPI) => {
+        const { rejectWithValue, dispatch } = thunkAPI
+        try {
+          dispatch(setAppStatusAC({ status: "loading" }))
+          const res = await todolistsApi.createTodolist(title)
+          dispatch(setAppStatusAC({ status: "succeeded" }))
+          const newTodo = res.data.data.item
+          return { todolist: newTodo }
+        } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
+          return rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          const newTodolists: DomainTodolist = {
+            ...action.payload.todolist,
+            filter: "all",
+          }
+          state.unshift(newTodolists)
+        },
+      },
+    ),
     changeTodolistFilterAC: create.reducer<{ id: string; filter: FilterValues }>((state, action) => {
       const todolist = state.find((todolist) => todolist.id === action.payload.id)
       if (todolist) {
@@ -44,24 +68,6 @@ export const todolistsSlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      // .addCase(fetchTodolistsTC.fulfilled, (state, action) => {
-      //   action.payload?.todolists.forEach((tl) => {
-      //     state.push({ ...tl, filter: "all" })
-      //   })
-      // })
-      // .addCase(fetchTodolistsTC.rejected, (_state, _action) => {
-      //   // обработка ошибки при запросе за тудулистами
-      // })
-      .addCase(createTodolistTC.fulfilled, (state, action) => {
-        const newTodolists: DomainTodolist = {
-          ...action.payload.todolist,
-          filter: "all",
-        }
-        state.unshift(newTodolists)
-      })
-      .addCase(createTodolistTC.rejected, (_state, _action) => {
-        // обработка ошибки при создании тудулиста
-      })
       .addCase(deleteTodolistTC.fulfilled, (state, action) => {
         const index = state.findIndex((todolist) => todolist.id === action.payload.id)
         if (index !== -1) {
