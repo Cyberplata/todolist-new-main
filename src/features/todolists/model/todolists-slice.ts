@@ -62,11 +62,14 @@ export const todolistsSlice = createAppSlice({
     deleteTodolistTC: create.asyncThunk(
       async (payload: { id: string }, thunkAPI) => {
         const { id } = payload
-        const { rejectWithValue } = thunkAPI
+        const { rejectWithValue, dispatch } = thunkAPI
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           await todolistsApi.deleteTodolist(id)
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           return { id }
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
@@ -75,6 +78,34 @@ export const todolistsSlice = createAppSlice({
           const index = state.findIndex((todolist) => todolist.id === action.payload.id)
           if (index !== -1) {
             state.splice(index, 1)
+          }
+        },
+      },
+    ),
+    changeTodolistTitleTC: create.asyncThunk(
+      async (
+        payload: {
+          id: string
+          title: string
+        },
+        thunkAPI,
+      ) => {
+        const { rejectWithValue, dispatch } = thunkAPI
+        try {
+          dispatch(setAppStatusAC({ status: "loading" }))
+          await todolistsApi.changeTodolistTitle(payload)
+          dispatch(setAppStatusAC({ status: "succeeded" }))
+          return payload
+        } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
+          return rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          const index = state.findIndex((todolist) => todolist.id === action.payload.id)
+          if (index !== -1) {
+            state[index].title = action.payload.title
           }
         },
       },
@@ -88,15 +119,15 @@ export const todolistsSlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      .addCase(changeTodolistTitleTC.fulfilled, (state, action) => {
-        const index = state.findIndex((todolist) => todolist.id === action.payload.id)
-        if (index !== -1) {
-          state[index].title = action.payload.title
-        }
-      })
-      .addCase(changeTodolistTitleTC.rejected, (_state, _action) => {
-        // обработка ошибки при запросе на смену имени тудулиста
-      })
+      // .addCase(changeTodolistTitleTC.fulfilled, (state, action) => {
+      //   const index = state.findIndex((todolist) => todolist.id === action.payload.id)
+      //   if (index !== -1) {
+      //     state[index].title = action.payload.title
+      //   }
+      // })
+      // .addCase(changeTodolistTitleTC.rejected, (_state, _action) => {
+      //   // обработка ошибки при запросе на смену имени тудулиста
+      // })
   },
 })
 
@@ -140,26 +171,27 @@ export const todolistsSlice = createAppSlice({
 //   },
 // )
 
-export const changeTodolistTitleTC = createAsyncThunk(
-  `${todolistsSlice.name}/changeTodolistTitleTC`,
-  async (
-    payload: {
-      id: string
-      title: string
-    },
-    thunkAPI,
-  ) => {
-    const { rejectWithValue } = thunkAPI
-    try {
-      await todolistsApi.changeTodolistTitle(payload)
-      return payload
-    } catch (error) {
-      return rejectWithValue(null)
-    }
-  },
-)
+// export const changeTodolistTitleTC = createAsyncThunk(
+//   `${todolistsSlice.name}/changeTodolistTitleTC`,
+//   async (
+//     payload: {
+//       id: string
+//       title: string
+//     },
+//     thunkAPI,
+//   ) => {
+//     const { rejectWithValue } = thunkAPI
+//     try {
+//       await todolistsApi.changeTodolistTitle(payload)
+//       return payload
+//     } catch (error) {
+//       return rejectWithValue(null)
+//     }
+//   },
+// )
 
-export const { fetchTodolistsTC, createTodolistTC, deleteTodolistTC, changeTodolistFilterAC } = todolistsSlice.actions
+export const { fetchTodolistsTC, createTodolistTC, deleteTodolistTC, changeTodolistTitleTC, changeTodolistFilterAC } =
+  todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
 export const { selectTodolists } = todolistsSlice.selectors
 

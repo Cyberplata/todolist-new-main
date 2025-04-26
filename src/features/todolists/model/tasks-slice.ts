@@ -55,11 +55,14 @@ export const tasksSlice = createAppSlice({
       },
     ),
     deleteTaskTC: create.asyncThunk(
-      async (payload: { todolistId: string; taskId: string }, { rejectWithValue }) => {
+      async (payload: { todolistId: string; taskId: string }, { rejectWithValue, dispatch }) => {
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           await tasksApi.deleteTask(payload)
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           return payload
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
@@ -77,7 +80,7 @@ export const tasksSlice = createAppSlice({
     _changeTaskStatusTC: create.asyncThunk(
       async (payload: { todolistId: string; taskId: string; status: TaskStatus }, thunkAPI) => {
         const { todolistId, taskId, status } = payload
-        const { rejectWithValue, getState } = thunkAPI
+        const { rejectWithValue, getState, dispatch } = thunkAPI
         // debugger
         const allTodolistTasks = (getState() as RootState).tasks[todolistId]
         const task = allTodolistTasks.find((task) => task.id === taskId)
@@ -96,10 +99,13 @@ export const tasksSlice = createAppSlice({
         }
 
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId, taskId, model })
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           const newTask = res.data.data.item
           return { task: newTask }
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
@@ -115,7 +121,7 @@ export const tasksSlice = createAppSlice({
     ),
     // var2 - Решение через передачу task через props в TaskItem в changeTaskStatusTC
     __changeTaskStatusTC: create.asyncThunk(
-      async (task: DomainTask, { rejectWithValue }) => {
+      async (task: DomainTask, { rejectWithValue, dispatch }) => {
         const { todoListId, id, description, title, priority, startDate, deadline, status } = task
 
         const model: UpdateTaskModel = {
@@ -128,10 +134,13 @@ export const tasksSlice = createAppSlice({
         }
 
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todoListId, taskId: id, model })
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           const newTask = res.data.data.item
           return { task: newTask }
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
