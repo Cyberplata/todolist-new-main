@@ -1,13 +1,12 @@
+import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 import { nanoid } from "@reduxjs/toolkit"
 import { beforeEach, expect, test } from "vitest"
 import {
-  changeTodolistFilterAC, createTodolistTC, deleteTodolistTC,
-  // changeTodolistTitleAC,
-  // createTodolistAC,
-  // deleteTodolistAC,
+  changeTodolistFilterAC,
+  createTodolistTC,
+  deleteTodolistTC,
   type DomainTodolist,
-  // type Todolist,
-  todolistsReducer
+  todolistsReducer,
 } from "../todolists-slice.ts"
 
 let todolistId1: string
@@ -19,15 +18,15 @@ beforeEach(() => {
   todolistId2 = nanoid()
 
   startState = [
-    { id: todolistId1, title: 'What to learn', addedDate: '', order: 0, filter: 'all' },
-    { id: todolistId2, title: 'What to buy', addedDate: '', order: 0, filter: 'all' },
+    { id: todolistId1, title: "What to learn", addedDate: "", order: 0, filter: "all" },
+    { id: todolistId2, title: "What to buy", addedDate: "", order: 0, filter: "all" },
   ]
 })
 
-test('correct todolist should be deleted', () => {
+test("correct todolist should be deleted", () => {
   const endState = todolistsReducer(
     startState,
-    deleteTodolistTC.fulfilled({ id: todolistId1 }, 'requestId', todolistId1)
+    deleteTodolistTC.fulfilled({ id: todolistId1 }, "requestId", todolistId1),
   )
 
   expect(endState.length).toBe(1)
@@ -35,11 +34,18 @@ test('correct todolist should be deleted', () => {
 })
 
 test("correct todolist should be created", () => {
-  const title = "New todolist"
-  const endState = todolistsReducer(startState, createTodolistTC(title))
+  const newTodolist: Todolist = {
+    id: nanoid(),
+    title: "New todolist",
+    order: 0,
+    addedDate: "",
+  }
+  const { title } = newTodolist
+  const actionPayload = { todolist: newTodolist }
+  const endState = todolistsReducer(startState, createTodolistTC.fulfilled(actionPayload, "requestId", title ))
 
   expect(endState.length).toBe(3)
-  expect(endState[2].title).toBe(title)
+  expect(endState[0].title).toBe(title)
 })
 
 test("correct todolist should change its title", () => {

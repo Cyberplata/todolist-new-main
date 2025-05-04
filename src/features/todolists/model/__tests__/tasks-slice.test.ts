@@ -1,4 +1,5 @@
 import type { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
+import { createTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
 import { beforeEach, expect, test } from "vitest"
 import { createTaskTC, deleteTaskTC, tasksReducer, type TasksState, updateTaskTC } from "../tasks-slice.ts"
 import { TaskPriority, TaskStatus } from "@/common/enums/enums.ts"
@@ -98,7 +99,8 @@ test("correct task should change its status and title", () => {
 })
 
 test("array should be created for new todolist", () => {
-  const endState = tasksReducer(startState, createTodolistAC("New todolist"))
+  // const endState = tasksReducer(startState, createTodolistAC("New todolist"))
+  const endState = tasksReducer(startState, createTodolistTC.fulfilled())
 
   const keys = Object.keys(endState)
   const newKey = keys.find((k) => k !== "todolistId1" && k !== "todolistId2")
