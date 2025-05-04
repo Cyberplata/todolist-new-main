@@ -59,8 +59,7 @@ export const todolistsSlice = createAppSlice({
       },
     ),
     deleteTodolistTC: create.asyncThunk(
-      async (payload: { id: string }, thunkAPI) => {
-        const { id } = payload
+        async (id: string, thunkAPI) => {
         const { rejectWithValue, dispatch } = thunkAPI
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
