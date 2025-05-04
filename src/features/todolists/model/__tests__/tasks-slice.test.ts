@@ -1,5 +1,7 @@
 import type { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
-import { createTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
+import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
+import { createTodolistTC, deleteTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
+import { nanoid } from "@reduxjs/toolkit"
 import { beforeEach, expect, test } from "vitest"
 import { createTaskTC, deleteTaskTC, tasksReducer, type TasksState, updateTaskTC } from "../tasks-slice.ts"
 import { TaskPriority, TaskStatus } from "@/common/enums/enums.ts"
@@ -99,21 +101,35 @@ test("correct task should change its status and title", () => {
 })
 
 test("array should be created for new todolist", () => {
-  // const endState = tasksReducer(startState, createTodolistAC("New todolist"))
-  const endState = tasksReducer(startState, createTodolistTC.fulfilled())
+  const newTodolist: Todolist = {
+    id: nanoid(),
+    title: "New todolist",
+    order: 0,
+    addedDate: "",
+  }
+  const { title } = newTodolist
+  const actionPayload = { todolist: newTodolist }
+
+  const endState = tasksReducer(startState, createTodolistTC.fulfilled(actionPayload, "requestId", title ))
 
   const keys = Object.keys(endState)
   const newKey = keys.find((k) => k !== "todolistId1" && k !== "todolistId2")
   if (!newKey) {
     throw Error("New key should be added")
   }
+  // or
+  expect(endState).toHaveProperty(newTodolist.id)
+  expect(endState[newTodolist.id]).toEqual([])
 
   expect(keys.length).toBe(3)
   expect(endState[newKey]).toEqual([])
 })
 
 test("property with todolistId should be deleted", () => {
-  const endState = tasksReducer(startState, deleteTodolistAC({ id: "todolistId2" }))
+  const endState = tasksReducer(
+    startState,
+    deleteTodolistTC.fulfilled({ id: "todolistId2" }, "requestId", "todolistId2"),
+  )
 
   const keys = Object.keys(endState)
 
