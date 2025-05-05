@@ -44,6 +44,11 @@ test("correct todolist should be created", () => {
   const actionPayload = { todolist: newTodolist }
   const endState = todolistsReducer(startState, createTodolistTC.fulfilled(actionPayload, "requestId", title ))
 
+  // var2
+  // const title = "New todolist"
+  // const todolist = { id: "todolistId3", title, addedDate: "", order: 0 }
+  // const endState = todolistsReducer(startState, createTodolistTC.fulfilled({ todolist }, "requestId", title))
+
   expect(endState.length).toBe(3)
   expect(endState[0].title).toBe(title)
 })

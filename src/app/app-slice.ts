@@ -19,7 +19,7 @@ export const appSlice = createSlice({
     }),
     setAppStatusAC: create.reducer<{status: RequestStatus}>((state, action) => {
       state.status = action.payload.status
-    })
+    }),
   }),
 })
 
