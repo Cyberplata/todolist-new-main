@@ -1,1 +1,1 @@
-export { TaskStatus, TaskPriority } from "./enums.ts"
+export { TaskStatus, TaskPriority, ResultCode } from "./enums.ts"
