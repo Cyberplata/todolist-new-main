@@ -1,6 +1,6 @@
-import { setAppErrorAC, setAppStatusAC } from "@/app/app-slice.ts"
+import { setAppStatusAC } from "@/app/app-slice.ts"
 import { ResultCode } from "@/common/enums/enums.ts"
-import { createAppSlice } from "@/common/utils"
+import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
 import type { DomainTask, UpdateTaskModel } from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
@@ -43,19 +43,11 @@ export const tasksSlice = createAppSlice({
             const newTask = res.data.data.item
             return { task: newTask }
           } else {
-            // if (res.data.messages.length) {
-            //   dispatch(setAppErrorAC({ error: res.data.messages[0] }))
-            // } else {
-            //   dispatch(setAppErrorAC({ error: "Some error occurred" }))
-            // }
-
-            const error = res.data.messages.length ? res.data.messages[0] : "Some error occurred"
-            dispatch(setAppErrorAC({ error }))
-            dispatch(setAppStatusAC({ status: "failed" }))
+            handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
           }
         } catch (error) {
-          dispatch(setAppStatusAC({ status: "failed" }))
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
@@ -105,11 +97,16 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todoListId, taskId: id, model })
-          dispatch(setAppStatusAC({ status: "succeeded" }))
-          const newTask = res.data.data.item
-          return { task: newTask }
+          if (res.data.resultCode === ResultCode.Success) {
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            const newTask = res.data.data.item
+            return { task: newTask }
+          } else {
+            handleServerAppError(res.data, dispatch)
+            return rejectWithValue(null)
+          }
         } catch (error) {
-          dispatch(setAppStatusAC({ status: "failed" }))
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
