@@ -102,10 +102,12 @@ export const tasksSlice = createAppSlice({
             const newTask = res.data.data.item
             return { task: newTask }
           } else {
+            // 200 проверка errors
             handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
           }
         } catch (error) {
+          // 400 - 500 errors
           handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }

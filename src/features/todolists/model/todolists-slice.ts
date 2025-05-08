@@ -1,6 +1,7 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
+import { ResultCode } from "@/common/enums"
 import type { RequestStatus } from "@/common/types"
-import { createAppSlice } from "@/common/utils"
+import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 
@@ -39,13 +40,19 @@ export const todolistsSlice = createAppSlice({
       async (title: string, thunkAPI) => {
         const { rejectWithValue, dispatch } = thunkAPI
         try {
+          debugger
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.createTodolist(title)
-          dispatch(setAppStatusAC({ status: "succeeded" }))
-          const newTodo = res.data.data.item
-          return { todolist: newTodo }
+          if (res.data.resultCode === ResultCode.Success) {
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            const newTodo = res.data.data.item
+            return { todolist: newTodo }
+          } else {
+            handleServerAppError(res.data, dispatch)
+            return rejectWithValue(null)
+          }
         } catch (error) {
-          dispatch(setAppStatusAC({ status: "failed" }))
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
