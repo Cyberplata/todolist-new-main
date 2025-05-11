@@ -13,10 +13,8 @@ export const appSlice = createSlice({
     selectStatus: (state) => state.status,
     selectAppError: (state) => state.error,
   },
-  // reducers состоит из подредьюсеров, эквивалентных одному оператору case в switch
   reducers: (create) => ({
     changeThemeModeAC: create.reducer<{ themeMode: ThemeMode }>((state, action) => {
-      // логика в подредьюсерах мутабельная, а иммутабельность достигается благодаря immer.js
       state.themeMode = action.payload.themeMode
     }),
     setAppStatusAC: create.reducer<{ status: RequestStatus }>((state, action) => {
@@ -28,9 +26,7 @@ export const appSlice = createSlice({
   }),
 })
 
-// action creator достается из appSlice.actions
 export const { changeThemeModeAC, setAppStatusAC, setAppErrorAC } = appSlice.actions
-// reducer достается из appSlice.reducer
 export const appReducer = appSlice.reducer
 export const { selectThemeMode, selectStatus, selectAppError } = appSlice.selectors
 
