@@ -67,20 +67,21 @@ export const tasksSlice = createAppSlice({
     ),
     deleteTaskTC: create.asyncThunk(
       async (payload: { todolistId: string; taskId: string }, { rejectWithValue, dispatch }) => {
+        const { todolistId, taskId } = payload
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          // dispatch(changeTodolistStatusAC({ id: payload.todolistId, entityStatus: "loading" }))
+          dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "loading" }))
           const res = await tasksApi.deleteTask(payload)
           if (res.data.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
           } else {
-            // dispatch(changeTodolistStatusAC({ id: payload.todolistId, entityStatus: "idle" }))
+            dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "failed" }))
             handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
           }
         } catch (error) {
-          // dispatch(changeTodolistStatusAC({ id: payload.todolistId, entityStatus: "idle" }))
+          dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "failed" }))
           handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
@@ -111,7 +112,6 @@ export const tasksSlice = createAppSlice({
 
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          dispatch(changeTaskEntityStatusAC({ todolistId: todoListId, taskId: id, entityStatus: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todoListId, taskId: id, model })
           if (res.data.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))

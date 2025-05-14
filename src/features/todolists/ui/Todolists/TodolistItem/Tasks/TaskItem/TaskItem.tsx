@@ -45,7 +45,7 @@ export const TaskItem = ({ task, todolist }: Props) => {
   }
 
   const isTaskCompleted = task.status === TaskStatus.Completed
-  const disabled = task.entityStatus === "loading"
+  const disabled = task.entityStatus === "loading" || todolist.entityStatus === "loading"
 
   return (
     <ListItem sx={getListItemSx(isTaskCompleted)}>
