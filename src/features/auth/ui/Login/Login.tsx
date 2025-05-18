@@ -1,6 +1,8 @@
 import { selectThemeMode } from "@/app/app-slice"
 import { useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
+import { loginSchema } from "@/features/auth/lib/schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
 import FormControl from "@mui/material/FormControl"
@@ -29,12 +31,16 @@ export const Login = () => {
     reset,
     control,
     formState: { errors },
-  } = useForm<Inputs>({ defaultValues: { email: "", password: "", rememberMe: false } })
+  } = useForm<Inputs>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "", rememberMe: false },
+  })
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data)
     reset()
   }
+  console.log(errors)
 
   return (
     <Grid container justifyContent={"center"}>
@@ -65,28 +71,15 @@ export const Login = () => {
               label="Email"
               margin="normal"
               error={!!errors.email}
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                  message: "Incorrect email address",
-                },
-              })}
+              {...register("email")}
             />
             {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
             <TextField type="password" label="Password" margin="normal" {...register("password")} />
             <FormControlLabel
               label="Remember me"
-              // control={
-              //   <Controller
-              //     name={"rememberMe"}
-              //     control={control}
-              //     render={({ field: { value, ...rest } }) => <Checkbox {...rest} checked={value} />}
-              //   />
-              // }
               control={
                 <Controller
-                  name={'rememberMe'}
+                  name={"rememberMe"}
                   control={control}
                   render={({ field: { value, ...rest } }) => <Checkbox {...rest} checked={value} />}
                   // render={({ field: { onChange, value } }) => (
