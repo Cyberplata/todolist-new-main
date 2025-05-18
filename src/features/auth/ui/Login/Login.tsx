@@ -1,7 +1,7 @@
 import { selectThemeMode } from "@/app/app-slice"
 import { useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
-import { loginSchema } from "@/features/auth/lib/schemas"
+import { type Inputs, loginSchema } from "@/features/auth/lib/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
@@ -14,11 +14,11 @@ import TextField from "@mui/material/TextField"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import styles from "./Login.module.css"
 
-type Inputs = {
-  email: string
-  password: string
-  rememberMe: boolean
-}
+// type Inputs = {
+//   email: string
+//   password: string
+//   rememberMe: boolean
+// }
 
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
