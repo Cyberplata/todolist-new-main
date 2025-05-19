@@ -3,7 +3,7 @@ import { ResultCode } from "@/common/enums/enums.ts"
 import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
-import type { DomainTask, UpdateTaskModel } from "@/features/todolists/api/tasksApi.types.ts"
+import { type DomainTask, DomainTaskSchema, type UpdateTaskModel } from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
 
 export const tasksSlice = createAppSlice({
@@ -19,10 +19,12 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
+          const newTasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate
+          // const newTasks = res.data.items
           dispatch(setAppStatusAC({ status: "succeeded" }))
-          const newTasks = res.data.items
           return { tasks: newTasks, todolistId }
-        } catch (error) {
+        } catch (error: any) {
+          console.log(error)
           dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
@@ -30,8 +32,8 @@ export const tasksSlice = createAppSlice({
       {
         fulfilled: (state, action) => {
           // state[action.payload.todolistId] = action.payload.tasks
-          if (!action.payload) return
-          state[action.payload.todolistId] = action.payload.tasks.map((t) => ({ ...t, entityStatus: "idle" }))
+          // if (!action.payload) return
+          state[action.payload?.todolistId] = action.payload.tasks.map((t) => ({ ...t, entityStatus: "idle" }))
         },
       },
     ),

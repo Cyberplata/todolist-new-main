@@ -14,12 +14,6 @@ import TextField from "@mui/material/TextField"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
 import styles from "./Login.module.css"
 
-// type Inputs = {
-//   email: string
-//   password: string
-//   rememberMe: boolean
-// }
-
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
 
