@@ -19,10 +19,9 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
-          const newTasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate
-          // const newTasks = res.data.items
+          const tasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate
           dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { tasks: newTasks, todolistId }
+          return { tasks, todolistId }
         } catch (error: any) {
           console.log(error)
           dispatch(setAppStatusAC({ status: "failed" }))
@@ -100,16 +99,16 @@ export const tasksSlice = createAppSlice({
     ),
     updateTaskTC: create.asyncThunk(
       async (task: TaskWithStatus, thunkAPI) => {
-        const { todoListId, id, description, title, priority, startDate, deadline, status } = task
+        const { todoListId, id } = task
         const { rejectWithValue, dispatch } = thunkAPI
 
         const model: UpdateTaskModel = {
-          description,
-          title,
-          priority,
-          startDate,
-          deadline,
-          status,
+          description: task.description,
+          title: task.title,
+          priority: task.priority,
+          startDate: task.startDate,
+          deadline: task.deadline,
+          status: task.status,
         }
 
         try {
