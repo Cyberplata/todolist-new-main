@@ -1,19 +1,6 @@
 import { TaskPriority, TaskStatus } from "@/common/enums"
 import { z } from "zod"
 
-// export type DomainTask = {
-//   description: string | null
-//   title: string
-//   status: TaskStatus
-//   priority: TaskPriority
-//   startDate: string | null
-//   deadline: string | null
-//   id: string
-//   todoListId: string
-//   order: number
-//   addedDate: string
-// }
-
 export const DomainTaskSchema = z.object({
   description: z.string().nullable(),
   title: z.string(),
