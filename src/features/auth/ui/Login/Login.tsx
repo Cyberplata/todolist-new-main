@@ -61,14 +61,16 @@ export const Login = () => {
             </p>
           </FormLabel>
           <FormGroup>
-            <TextField
-              label="Email"
-              margin="normal"
-              error={!!errors.email}
-              {...register("email")}
-            />
+            <TextField label="Email" margin="normal" error={!!errors.email} {...register("email")} />
             {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
-            <TextField type="password" label="Password" margin="normal" {...register("password")} />
+            <TextField
+              type="password"
+              label="Password"
+              margin="normal"
+              error={!!errors.password}
+              {...register("password")}
+            />
+            {errors.password && <span className={styles.errorMessage}>{errors.password.message}</span>}
             <FormControlLabel
               label="Remember me"
               control={
