@@ -3,7 +3,7 @@ import { ResultCode } from "@/common/enums"
 import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
-import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
+import { type Todolist, TodolistSchema } from "@/features/todolists/api/todolistsApi.types.ts"
 
 export const todolistsSlice = createAppSlice({
   name: "todolists",
@@ -18,9 +18,11 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.getTodolists()
+          TodolistSchema.array().parse(res.data)
           dispatch(setAppStatusAC({ status: "succeeded" }))
           return { todolists: res.data }
         } catch (error) {
+          console.log(error)
           dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
@@ -32,6 +34,7 @@ export const todolistsSlice = createAppSlice({
           })
         },
         rejected: (_state, _action) => {
+          // console.table(_action)
           // обработка ошибки при запросе за тудулистами
         },
       },

@@ -19,7 +19,7 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
-          const tasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate
+          const tasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate 🈳
           dispatch(setAppStatusAC({ status: "succeeded" }))
           return { tasks, todolistId }
         } catch (error: any) {
