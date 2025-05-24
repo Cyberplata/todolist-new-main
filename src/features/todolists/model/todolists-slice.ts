@@ -1,6 +1,6 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
 import { ResultCode } from "@/common/enums"
-import type { RequestStatus } from "@/common/types"
+import { CreateTodolistsBaseResponseSchema, type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import { type Todolist, TodolistSchema } from "@/features/todolists/api/todolistsApi.types.ts"
@@ -45,12 +45,13 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.createTodolist(title)
-          if (res.data.resultCode === ResultCode.Success) {
+          const parsedRes = CreateTodolistsBaseResponseSchema.parse(res.data)
+          if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
-            const newTodo = res.data.data.item
+            const newTodo = parsedRes.data.item
             return { todolist: newTodo }
           } else {
-            handleServerAppError(res.data, dispatch)
+            handleServerAppError(parsedRes, dispatch)
             return rejectWithValue(null)
           }
         } catch (error) {

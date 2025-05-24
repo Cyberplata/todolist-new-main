@@ -33,7 +33,7 @@ export const TodolistTitle = ({ todolist }: Props) => {
       <h3>
         <EditableSpan value={title} onChange={changeTodolistTitle} disabled={disabled} />
       </h3>
-      <span className={styles.date}>{new Date(todolist.addedDate).toLocaleDateString()}</span>
+      <span className={styles.date}>Date: {new Date(todolist.addedDate).toLocaleDateString()}</span>
       <IconButton onClick={deleteTodolist} disabled={disabled}>
         <DeleteIcon />
       </IconButton>
