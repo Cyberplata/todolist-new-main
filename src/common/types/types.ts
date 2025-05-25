@@ -22,7 +22,7 @@ export const CreateTodolistsBaseResponseSchema = BaseResponseSchema(
   z.object({ item: TodolistSchema })
 )
 export const DeleteTodolistResponseSchema = BaseResponseSchema(z.object({}))
-export const ChangeTodolistTitleResponseSchema = BaseResponseSchema(z.object({ item: TodolistSchema }))
+export const ChangeTodolistTitleResponseSchema = BaseResponseSchema(z.object({}))
 
 export type CreateBaseResponse = z.infer<typeof CreateTodolistsBaseResponseSchema>
 export type DeleteBaseResponse = z.infer<typeof DeleteTodolistResponseSchema>
