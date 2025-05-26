@@ -7,7 +7,7 @@ import {
   CreateTasksSchema,
   DeleteTaskSchema,
   type DomainTask,
-  DomainTaskSchema,
+  GetTasksResponseSchema,
   type UpdateTaskModel,
   UpdateTaskSchema,
 } from "@/features/todolists/api/tasksApi.types.ts"
@@ -26,9 +26,10 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
-          const tasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate 🈳
+          // const tasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate v1 🈳
+          const parsedRes = safeParse(GetTasksResponseSchema, res.data) // ZOD validate v2🈳
           dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { tasks, todolistId }
+          return { tasks: parsedRes.items, todolistId }
         } catch (error: any) {
           console.log(error)
           dispatch(setAppStatusAC({ status: "failed" }))
@@ -124,6 +125,7 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todoListId, taskId: id, model })
           const parsedRes = safeParse(UpdateTaskSchema, res.data)
+          console.log(parsedRes)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             const newTask = res.data.data.item

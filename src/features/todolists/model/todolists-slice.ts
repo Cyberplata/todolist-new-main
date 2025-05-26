@@ -24,9 +24,11 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.getTodolists()
-          TodolistSchema.array().parse(res.data)
+          // TodolistSchema.array().parse(res.data)
+          // return { todolists: res.data }
+          const parsedRes = safeParse(TodolistSchema.array(), res.data)
           dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { todolists: res.data }
+          return { todolists: parsedRes }
         } catch (error) {
           console.log(error)
           dispatch(setAppStatusAC({ status: "failed" }))
@@ -101,10 +103,11 @@ export const todolistsSlice = createAppSlice({
       },
       {
         fulfilled: (state, action) => {
-          const index = state.findIndex((todolist) => todolist.id === action.payload?.id)
-          if (index !== -1) {
-            state.splice(index, 1)
-          }
+          // const index = state.findIndex((todolist) => todolist.id === action.payload?.id)
+          // if (index !== -1) {
+          //   state.splice(index, 1)
+          // }
+          return state.filter(todolist => todolist.id !== action.payload?.id)
         },
       },
     ),
@@ -120,7 +123,7 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.changeTodolistTitle(payload)
-          console.log("API response:", res.data)
+          // console.log("API response:", res.data)
           const parsedRes = safeParse(ChangeTodolistTitleSchema, res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
