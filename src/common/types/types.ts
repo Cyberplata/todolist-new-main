@@ -1,5 +1,4 @@
 import { ResultCode } from "@/common/enums"
-import { TodolistSchema } from "@/features/todolists/api/todolistsApi.types.ts"
 import { z } from "zod"
 
 // Обычная FieldError схема
@@ -18,19 +17,10 @@ export const BaseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     resultCode: z.nativeEnum(ResultCode),
   })
 
-export const CreateTodolistsBaseResponseSchema = BaseResponseSchema(
-  z.object({ item: TodolistSchema })
-)
-export const DeleteTodolistResponseSchema = BaseResponseSchema(z.object({}))
-export const ChangeTodolistTitleResponseSchema = BaseResponseSchema(z.object({}))
-
-export type CreateBaseResponse = z.infer<typeof CreateTodolistsBaseResponseSchema>
-export type DeleteBaseResponse = z.infer<typeof DeleteTodolistResponseSchema>
-export type ChangeTodolistTitleBaseResponse = z.infer<typeof ChangeTodolistTitleResponseSchema>
-
 export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
 
 
+// ------------------------OLD------------------------👴👴👴
 // export type FieldError = {
 //   error: string
 //   field: string

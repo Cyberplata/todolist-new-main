@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 export const safeParse = <T>(schema: z.ZodType<T>, data: unknown): T => {
-  debugger
   const result = schema.safeParse(data)
   if (!result.success) {
     console.error("Invalid API response", result.error)

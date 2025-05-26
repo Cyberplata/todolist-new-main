@@ -1,14 +1,15 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
 import { ResultCode } from "@/common/enums"
-import {
-  ChangeTodolistTitleResponseSchema,
-  CreateTodolistsBaseResponseSchema,
-  DeleteTodolistResponseSchema,
-  type RequestStatus
-} from "@/common/types"
+import { type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError, safeParse } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
-import { type Todolist, TodolistSchema } from "@/features/todolists/api/todolistsApi.types.ts"
+import {
+  ChangeTodolistTitleSchema,
+  CreateTodolistsSchema,
+  DeleteTodolistSchema,
+  type Todolist,
+  TodolistSchema,
+} from "@/features/todolists/api/todolistsApi.types.ts"
 
 export const todolistsSlice = createAppSlice({
   name: "todolists",
@@ -52,7 +53,7 @@ export const todolistsSlice = createAppSlice({
           const res = await todolistsApi.createTodolist(title)
           // CreateTodolistsBaseResponseSchema.parse(res.data.data.item)
           // const parsedRes = CreateTodolistsBaseResponseSchema.parse(res.data)
-          const parsedRes = safeParse(CreateTodolistsBaseResponseSchema, res.data)
+          const parsedRes = safeParse(CreateTodolistsSchema, res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             const newTodo = parsedRes.data.item
@@ -84,7 +85,7 @@ export const todolistsSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTodolistStatusAC({ id, entityStatus: "loading" }))
           const res = await todolistsApi.deleteTodolist(id)
-          const parsedRes = safeParse(DeleteTodolistResponseSchema, res.data)
+          const parsedRes = safeParse(DeleteTodolistSchema, res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return { id }
@@ -120,7 +121,7 @@ export const todolistsSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.changeTodolistTitle(payload)
           console.log("API response:", res.data)
-          const parsedRes = safeParse(ChangeTodolistTitleResponseSchema, res.data)
+          const parsedRes = safeParse(ChangeTodolistTitleSchema, res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload

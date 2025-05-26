@@ -1,5 +1,6 @@
 import type { Nullable } from "@/app/app-slice.ts"
 import { TaskPriority, TaskStatus } from "@/common/enums"
+import { BaseResponseSchema } from "@/common/types"
 import { z } from "zod"
 
 export const DomainTaskSchema = z.object({
@@ -7,16 +8,22 @@ export const DomainTaskSchema = z.object({
   title: z.string(),
   status: z.nativeEnum(TaskStatus),
   priority: z.nativeEnum(TaskPriority),
-  // startDate: z.nullable(z.string().datetime({ local: true })),
-  startDate: z.nullable(z.string()),
+  startDate: z.nullable(z.string().datetime({ local: true })),
+  // startDate: z.nullable(z.string()),
   deadline: z.string().nullable(),
   id: z.string(),
   todoListId: z.string(),
   order: z.number(),
   addedDate: z.string().datetime({ local: true }),
 })
+export const CreateTasksSchema = BaseResponseSchema(z.object({ item: DomainTaskSchema }))
+export const UpdateTaskSchema = BaseResponseSchema(z.object({ item: DomainTaskSchema }))
+export const DeleteTaskSchema = BaseResponseSchema(z.object({}))
 
 export type DomainTask = z.infer<typeof DomainTaskSchema>
+export type CreateTasks = z.infer<typeof CreateTasksSchema>
+export type UpdateTasks = z.infer<typeof UpdateTaskSchema>
+export type DeleteTasks = z.infer<typeof DeleteTaskSchema>
 
 export type GetTasksResponse = {
   error: Nullable<string>
