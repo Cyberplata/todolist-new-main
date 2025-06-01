@@ -1,7 +1,8 @@
 import { selectThemeMode } from "@/app/app-slice"
-import { useAppSelector } from "@/common/hooks"
+import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
-import { type Inputs, loginSchema } from "@/features/auth/lib/schemas"
+import { type LoginInputs, loginSchema } from "@/features/auth/lib/schemas"
+import { loginTC } from "@/features/auth/model/auth-slice.ts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
@@ -19,22 +20,25 @@ export const Login = () => {
 
   const theme = getTheme(themeMode)
 
+  const dispatch = useAppDispatch()
+
   const {
     register,
     handleSubmit,
     reset,
     control,
     formState: { errors },
-  } = useForm<Inputs>({
+  } = useForm<LoginInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "", rememberMe: false },
   })
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data)
+  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
+    // console.log(data)
+    dispatch(loginTC(data))
     reset()
   }
-  console.log(errors)
+  // console.log(errors)
 
   return (
     <Grid container justifyContent={"center"}>
