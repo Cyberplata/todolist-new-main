@@ -1,6 +1,7 @@
 import { BaseResponseSchema } from "@/common/types"
 import { z } from "zod"
 
+// Schemas for API responses
 export const TodolistSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -11,6 +12,7 @@ export const CreateTodolistsSchema = BaseResponseSchema(z.object({ item: Todolis
 export const DeleteTodolistSchema = BaseResponseSchema(z.object({}))
 export const ChangeTodolistTitleSchema = BaseResponseSchema(z.object({}))
 
+// Types for API responses
 export type Todolist = z.infer<typeof TodolistSchema>
 export type CreateTodolists = z.infer<typeof CreateTodolistsSchema>
 export type DeleteTodolists = z.infer<typeof DeleteTodolistSchema>

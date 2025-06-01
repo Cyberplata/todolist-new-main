@@ -2,6 +2,7 @@ import { TaskPriority, TaskStatus } from "@/common/enums"
 import { BaseResponseSchema } from "@/common/types"
 import { z } from "zod"
 
+// Schemas for API responses
 export const DomainTaskSchema = z.object({
   description: z.string().nullable(),
   title: z.string(),
@@ -32,6 +33,7 @@ export const UpdateTaskModelSchema = z.object({
   deadline: z.string().nullable(),
 })
 
+// Types for API responses
 export type DomainTask = z.infer<typeof DomainTaskSchema>
 export type CreateTasks = z.infer<typeof CreateTasksSchema>
 export type UpdateTasks = z.infer<typeof UpdateTaskSchema>

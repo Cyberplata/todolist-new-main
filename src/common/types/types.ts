@@ -17,8 +17,14 @@ export const BaseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     resultCode: z.nativeEnum(ResultCode),
   })
 
-export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
+export type BaseResponse<T = {}> = { //
+  data: T
+  fieldsErrors: z.infer<typeof FieldErrorSchema>[]
+  messages: string[]
+  resultCode: ResultCode
+}
 
+export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
 
 // ------------------------OLD------------------------👴👴👴
 // export type FieldError = {
@@ -26,7 +32,7 @@ export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
 //   field: string
 // }
 //
-// export type BaseResponse<T = {}> = {
+// export type BaseResponse<T = {}> = { //
 //   data: T
 //   fieldsErrors: FieldError[]
 //   messages: string[]

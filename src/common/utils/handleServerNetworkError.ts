@@ -30,6 +30,8 @@ export const handleServerNetworkError = (dispatch: Dispatch, error: unknown) => 
       handler: (e) => {
         const err = e as z.ZodError
         console.table(err.issues)
+        // const messages = err.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`);
+        // return `Validation error: ${messages.join("; ")}`;
         return 'Zod error. Смотри консоль'
       },
     },

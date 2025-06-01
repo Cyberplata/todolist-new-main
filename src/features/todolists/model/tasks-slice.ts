@@ -1,7 +1,7 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
 import { ResultCode } from "@/common/enums/enums.ts"
 import type { RequestStatus } from "@/common/types"
-import { createAppSlice, handleServerAppError, handleServerNetworkError, safeParse } from "@/common/utils"
+import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
 import {
   CreateTasksSchema,
@@ -27,7 +27,8 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
           // const tasks = DomainTaskSchema.array().parse(res.data.items) // ZOD validate v1 🈳
-          const parsedRes = safeParse(GetTasksResponseSchema, res.data) // ZOD validate v2🈳
+          // const parsedRes = safeParse(GetTasksResponseSchema, res.data) // ZOD validate v2🈳
+          const parsedRes = GetTasksResponseSchema.parse(res.data) // Парсим весь ответ
           dispatch(setAppStatusAC({ status: "succeeded" }))
           return { tasks: parsedRes.items, todolistId }
         } catch (error: any) {
@@ -40,7 +41,7 @@ export const tasksSlice = createAppSlice({
         fulfilled: (state, action) => {
           // state[action.payload.todolistId] = action.payload.tasks
           // if (!action.payload) return
-          state[action.payload?.todolistId] = action.payload.tasks.map((t) => ({ ...t, entityStatus: "idle" }))
+          state[action.payload.todolistId] = action.payload.tasks.map((t) => ({ ...t, entityStatus: "idle" }))
         },
       },
     ),
@@ -50,10 +51,11 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.createTask(payload)
-          const parsedRes = safeParse(CreateTasksSchema, res.data)
+          const parsedRes = CreateTasksSchema.parse(res.data)
+          // const parsedRes = safeParse(CreateTasksSchema, res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
-            const newTask = res.data.data.item
+            const newTask = parsedRes.data.item
             return { task: newTask }
           } else {
             handleServerAppError(parsedRes, dispatch)
@@ -82,7 +84,8 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "loading" }))
           const res = await tasksApi.deleteTask(payload)
-          const parsedRes = safeParse(DeleteTaskSchema, res.data)
+          // const parsedRes = safeParse(DeleteTaskSchema, res.data)
+          const parsedRes = DeleteTaskSchema.parse(res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
@@ -124,8 +127,8 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todoListId, taskId: id, model })
-          const parsedRes = safeParse(UpdateTaskSchema, res.data)
-          console.log(parsedRes)
+          // const parsedRes = safeParse(UpdateTaskSchema, res.data)
+          const parsedRes = UpdateTaskSchema.parse(res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             const newTask = res.data.data.item
