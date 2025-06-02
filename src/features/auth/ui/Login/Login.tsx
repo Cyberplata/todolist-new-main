@@ -1,8 +1,9 @@
 import { selectThemeMode } from "@/app/app-slice"
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
+import { Path } from "@/common/routing"
 import { getTheme } from "@/common/theme"
 import { type LoginInputs, loginSchema } from "@/features/auth/lib/schemas"
-import { loginTC } from "@/features/auth/model/auth-slice.ts"
+import { loginTC, selectIsLoggedIn } from "@/features/auth/model/auth-slice.ts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
@@ -13,12 +14,15 @@ import FormLabel from "@mui/material/FormLabel"
 import Grid from "@mui/material/Grid2"
 import TextField from "@mui/material/TextField"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { Navigate } from "react-router"
 import styles from "./Login.module.css"
 
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
 
   const theme = getTheme(themeMode)
+
+  const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
   const dispatch = useAppDispatch()
 
@@ -38,7 +42,10 @@ export const Login = () => {
     dispatch(loginTC(data))
     reset()
   }
-  // console.log(errors)
+  
+  if (isLoggedIn) {
+    return <Navigate to={Path.Main} />
+  }
 
   return (
     <Grid container justifyContent={"center"}>
