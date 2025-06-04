@@ -2,7 +2,7 @@ import { selectThemeMode } from "@/app/app-slice"
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { Path } from "@/common/routing"
 import { getTheme } from "@/common/theme"
-import { type LoginInputs, loginSchema } from "@/features/auth/lib/schemas"
+import { type LoginRequest, loginSchema } from "@/features/auth/lib/schemas"
 import { loginTC, selectIsLoggedIn } from "@/features/auth/model/auth-slice.ts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
@@ -13,18 +13,17 @@ import FormGroup from "@mui/material/FormGroup"
 import FormLabel from "@mui/material/FormLabel"
 import Grid from "@mui/material/Grid2"
 import TextField from "@mui/material/TextField"
+import { useEffect } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { Navigate } from "react-router"
+import { Navigate, useNavigate } from "react-router"
 import styles from "./Login.module.css"
 
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
-
-  const theme = getTheme(themeMode)
-
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
-
+  const theme = getTheme(themeMode)
   const dispatch = useAppDispatch()
+  // const navigate = useNavigate()
 
   const {
     register,
@@ -32,20 +31,28 @@ export const Login = () => {
     reset,
     control,
     formState: { errors },
-  } = useForm<LoginInputs>({
+  } = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "", rememberMe: false },
   })
 
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
+  const onSubmit: SubmitHandler<LoginRequest> = (data) => {
     // console.log(data)
     dispatch(loginTC(data))
     reset()
   }
-  
+
+  // var1 - Navigate component
   if (isLoggedIn) {
     return <Navigate to={Path.Main} />
   }
+
+  // var2 - useNavigate hook
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigate(Path.Main)
+  //   }
+  // }, [isLoggedIn])
 
   return (
     <Grid container justifyContent={"center"}>

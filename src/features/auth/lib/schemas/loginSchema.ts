@@ -1,18 +1,15 @@
 import { z } from "zod"
 
 export const loginSchema = z.object({
-  email: z
+  email: z.string().min(1, { message: "Email is required" }).email({ message: "Incorrect email address" }),
+  password: z
     .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Incorrect email address" }),
-  password: z.string()
     // .min(1, { message: "Password is required" })
     .nonempty({ message: "Password is required" })
     .min(3, { message: "Password must be at least 3 characters long" }),
   rememberMe: z.boolean().optional(),
   captcha: z.string().optional(),
 })
-
-export type LoginInputs = z.infer<typeof loginSchema>
+export type LoginRequest = z.infer<typeof loginSchema>
 
 // console.log(loginSchema.parse({ email: "free@samuraijs.com", password: "free", rememberMe: true }))
