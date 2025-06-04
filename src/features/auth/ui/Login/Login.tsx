@@ -13,9 +13,8 @@ import FormGroup from "@mui/material/FormGroup"
 import FormLabel from "@mui/material/FormLabel"
 import Grid from "@mui/material/Grid2"
 import TextField from "@mui/material/TextField"
-import { useEffect } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { Navigate, useNavigate } from "react-router"
+import { Navigate } from "react-router"
 import styles from "./Login.module.css"
 
 export const Login = () => {
