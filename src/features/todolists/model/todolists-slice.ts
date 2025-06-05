@@ -1,4 +1,5 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
+import type { RootState } from "@/app/store.ts"
 import { ResultCode } from "@/common/enums"
 import { type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
@@ -20,7 +21,14 @@ export const todolistsSlice = createAppSlice({
   reducers: (create) => ({
     fetchTodolistsTC: create.asyncThunk(
       async (_, thunkAPI) => {
-        const { rejectWithValue, dispatch } = thunkAPI
+        const { rejectWithValue, dispatch, getState } = thunkAPI
+
+        // Проверяем авторизацию
+        const state = getState() as RootState
+        if (!state.auth.isLoggedIn) {
+          return rejectWithValue({ message: 'User not authorized' })
+        }
+
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.getTodolists()
@@ -30,7 +38,7 @@ export const todolistsSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "succeeded" }))
           return { todolists: parsedRes }
         } catch (error) {
-          console.log(error)
+          // console.log(error)
           dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
@@ -101,6 +109,7 @@ export const todolistsSlice = createAppSlice({
         } catch (error) {
           dispatch(changeTodolistStatusAC({ id, entityStatus: "failed" }))
           handleServerNetworkError(dispatch, error)
+          return rejectWithValue(null)
         }
       },
       {
@@ -136,13 +145,14 @@ export const todolistsSlice = createAppSlice({
           }
         } catch (error) {
           handleServerNetworkError(dispatch, error)
+          return rejectWithValue(null)
         }
       },
       {
         fulfilled: (state, action) => {
-          const index = state.findIndex((todolist) => todolist.id === action.payload?.id)
+          const index = state.findIndex((todolist) => todolist.id === action.payload.id)
           if (index !== -1) {
-            state[index].title = action.payload!.title
+            state[index].title = action.payload.title
           }
         },
         // rejected: (state, action) => {

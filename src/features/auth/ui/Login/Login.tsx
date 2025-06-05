@@ -18,6 +18,8 @@ import { Navigate } from "react-router"
 import styles from "./Login.module.css"
 
 export const Login = () => {
+  debugger
+
   const themeMode = useAppSelector(selectThemeMode)
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
   const theme = getTheme(themeMode)

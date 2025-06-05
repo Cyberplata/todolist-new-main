@@ -8,6 +8,14 @@ export const TodolistSchema = z.object({
   addedDate: z.string().datetime({ local: true }),
   order: z.number(),
 })
+// export const TodolistSchema = z.object({
+//   id: z.string().optional(),
+//   title: z.string().optional(),
+//   addedDate: z.string().datetime({ local: true }).optional(),
+//   order: z.number().optional(),
+// }).refine(data => data.id && data.title, {
+//   message: "ID and title are required for valid todolist"
+// })
 export const CreateTodolistsSchema = BaseResponseSchema(z.object({ item: TodolistSchema }))
 export const DeleteTodolistSchema = BaseResponseSchema(z.object({}))
 export const ChangeTodolistTitleSchema = BaseResponseSchema(z.object({}))

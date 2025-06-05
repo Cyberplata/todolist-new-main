@@ -70,6 +70,8 @@ export const authSlice = createAppSlice({
     ),
     initializeAppTC: create.asyncThunk(
       async (_, thunkAPI) => {
+        debugger
+
         const { rejectWithValue, dispatch } = thunkAPI
         try {
           dispatch(setAppStatusAC({ status: "loading" }))

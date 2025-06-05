@@ -11,6 +11,8 @@ import { ThemeProvider } from "@mui/material/styles"
 import { useEffect } from "react"
 
 export const App = () => {
+  debugger
+
   const themeMode = useAppSelector(selectThemeMode)
   const theme = getTheme(themeMode)
 

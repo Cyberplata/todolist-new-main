@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
+import { selectIsLoggedIn } from "@/features/auth/model/auth-slice.ts"
 import { fetchTodolistsTC, selectTodolists } from "@/features/todolists/model/todolists-slice.ts"
 import Grid from "@mui/material/Grid2"
 import Paper from "@mui/material/Paper"
@@ -10,9 +11,23 @@ export const Todolists = () => {
 
   const dispatch = useAppDispatch()
 
+  const isLoggedIn = useAppSelector(selectIsLoggedIn)
+
   useEffect(() => {
-    dispatch(fetchTodolistsTC())
-  }, [])
+    // ✅ Запрос только для авторизованных пользователей
+    if (isLoggedIn) {
+      dispatch(fetchTodolistsTC())
+    }
+  }, [dispatch, isLoggedIn]) // 🔥 isLoggedIn в зависимостях
+
+  // ✅ Показываем компонент только авторизованным
+  if (!isLoggedIn) {
+    return null // или <Navigate to="/login" />
+  }
+
+  // useEffect(() => {
+  //   dispatch(fetchTodolistsTC())
+  // }, [])
 
   return (
     <>

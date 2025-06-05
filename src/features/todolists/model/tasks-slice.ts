@@ -225,7 +225,16 @@ export const tasksSlice = createAppSlice({
         state[action.payload.todolist.id] = []
       })
       .addCase(deleteTodolistTC.fulfilled, (state, action) => {
-        delete state[action.payload!.id]
+        // Вариант 1: Проверка с early return
+        // if (!action.payload?.id) return state;
+        //
+        // delete state[action.payload.id]
+
+        //Вариант 2: Использование optional chaining с условием
+        const todolistId = action.payload?.id;
+        if (todolistId && state[todolistId]) {
+          delete state[todolistId];
+        }
       })
   },
 })
