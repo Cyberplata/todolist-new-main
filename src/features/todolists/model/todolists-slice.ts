@@ -1,5 +1,6 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
 import type { RootState } from "@/app/store.ts"
+import { clearDataAC } from "@/common/actions"
 import { ResultCode } from "@/common/enums"
 import { type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
@@ -173,6 +174,12 @@ export const todolistsSlice = createAppSlice({
       }
     }),
   }),
+  extraReducers: (builder) => {
+    builder
+      .addCase(clearDataAC, () => {
+        return []
+      })
+  }
 })
 
 export const {

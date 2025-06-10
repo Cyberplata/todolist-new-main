@@ -1,4 +1,5 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
+import { clearDataAC } from "@/common/actions"
 import { AUTH_TOKEN } from "@/common/constants"
 import { ResultCode } from "@/common/enums"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
@@ -51,6 +52,7 @@ export const authSlice = createAppSlice({
           const parsedRes = LogoutSchema.parse(res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
+            dispatch(clearDataAC())
             localStorage.removeItem(AUTH_TOKEN)
             return { isLoggedIn: false }
           } else {

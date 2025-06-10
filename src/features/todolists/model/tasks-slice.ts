@@ -1,4 +1,5 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
+import { clearDataAC } from "@/common/actions"
 import { ResultCode } from "@/common/enums/enums.ts"
 import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
@@ -235,6 +236,9 @@ export const tasksSlice = createAppSlice({
         if (todolistId && state[todolistId]) {
           delete state[todolistId];
         }
+      })
+      .addCase(clearDataAC, () => {
+        return {}
       })
   },
 })
