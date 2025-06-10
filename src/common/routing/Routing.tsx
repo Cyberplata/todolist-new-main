@@ -10,13 +10,12 @@ import { Route, Routes } from "react-router"
 export const Path = {
   Main: "/",
   Login: "/login",
-  Faq: '/faq',
+  Faq: "/faq",
   NotFound: "*",
 } as const
 
 export const Routing = () => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
-
 
   return (
     <Routes>
@@ -44,8 +43,21 @@ export const Routing = () => {
         <Route path={Path.Faq} element={<Faq />} />
       </Route>
 
-      <Route path={Path.Login} element={<Login />} />
+      <Route element={<ProtectedRoute isAllowed={!isLoggedIn} redirectPath={Path.Main} />}>
+        <Route path={Path.Login} element={<Login />} />
+      </Route>
+
       <Route path={Path.NotFound} element={<PageNotFound />} />
+
+      {/*Вариант для чего мы оставляем children в ProtectedRoute*/}
+      {/*<Route*/}
+      {/*  path={Path.Login}*/}
+      {/*  element={*/}
+      {/*    <ProtectedRoute isAllowed={!isLoggedIn}>*/}
+      {/*      <Login />*/}
+      {/*    </ProtectedRoute>*/}
+      {/*  }*/}
+      {/*/>*/}
     </Routes>
   )
 }

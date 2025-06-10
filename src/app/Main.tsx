@@ -6,16 +6,11 @@ import Container from "@mui/material/Container"
 import Grid from "@mui/material/Grid2"
 
 export const Main = () => {
-  // const isLoggedIn = useAppSelector(selectIsLoggedIn)
   const dispatch = useAppDispatch()
 
   const createTodolist = (title: string) => {
     dispatch(createTodolistTC(title))
   }
-
-  // if (!isLoggedIn) {
-  //   return <Navigate to={Path.Login} />
-  // }
 
   return (
     <Container maxWidth={"lg"}>
