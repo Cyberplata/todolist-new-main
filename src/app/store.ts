@@ -4,6 +4,7 @@ import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import { tasksReducer, tasksSlice } from "@/features/todolists/model/tasks-slice.ts"
 import { todolistsReducer, todolistsSlice } from "@/features/todolists/model/todolists-slice.ts"
 import { configureStore } from "@reduxjs/toolkit"
+import { setupListeners } from "@reduxjs/toolkit/query"
 
 // объединение reducer'ов с помощью combineReducers
 // const rootReducer = combineReducers({
@@ -23,6 +24,8 @@ export const store = configureStore({
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(todolistsApi.middleware),
 })
+
+setupListeners(store.dispatch)
 
 // автоматическое определение типа всего объекта состояния
 export type RootState = ReturnType<typeof store.getState>
