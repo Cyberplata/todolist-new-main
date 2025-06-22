@@ -76,6 +76,14 @@ export const authSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await authApi.me()
+
+          // Сначала проверяем статус ответа
+          if (res.status === 401) {
+            // Пользователь не авторизован - это нормальная ситуация
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            return { isLoggedIn: false }
+          }
+
           const parsedRes = MeSchema.parse(res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))

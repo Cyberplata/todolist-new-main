@@ -4,7 +4,7 @@ import { clearDataAC } from "@/common/actions"
 import { ResultCode } from "@/common/enums"
 import { type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
-import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
+import { _todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import {
   ChangeTodolistTitleSchema,
   CreateTodolistsSchema,
@@ -32,7 +32,7 @@ export const todolistsSlice = createAppSlice({
 
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          const res = await todolistsApi.getTodolists()
+          const res = await _todolistsApi.getTodolists()
           const parsedRes = TodolistSchema.array().parse(res.data)
           // return { todolists: res.data }
           // const parsedRes = safeParse(TodolistSchema.array(), res.data)
@@ -61,7 +61,7 @@ export const todolistsSlice = createAppSlice({
         const { rejectWithValue, dispatch } = thunkAPI
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          const res = await todolistsApi.createTodolist(title)
+          const res = await _todolistsApi.createTodolist(title)
           // const todolist = TodolistSchema.parse(res.data.data.item)
           // const parsedRes = safeParse(CreateTodolistsSchema, res.data)
           // Парсим весь ответ с помощью CreateTodolistsSchema
@@ -96,7 +96,7 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTodolistStatusAC({ id, entityStatus: "loading" }))
-          const res = await todolistsApi.deleteTodolist(id)
+          const res = await _todolistsApi.deleteTodolist(id)
           // const parsedRes = safeParse(DeleteTodolistSchema, res.data)
           const parsedRes = DeleteTodolistSchema.parse(res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
@@ -134,7 +134,7 @@ export const todolistsSlice = createAppSlice({
         const { rejectWithValue, dispatch } = thunkAPI
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          const res = await todolistsApi.changeTodolistTitle(payload)
+          const res = await _todolistsApi.changeTodolistTitle(payload)
           // const parsedRes = safeParse(ChangeTodolistTitleSchema, res.data)
           const parsedRes = ChangeTodolistTitleSchema.parse(res.data)
           if (parsedRes.resultCode === ResultCode.Success) {
