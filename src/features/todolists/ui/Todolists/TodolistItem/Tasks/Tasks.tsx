@@ -21,14 +21,13 @@ export const Tasks = ({ todolist }: Props) => {
   if (filter === "completed") {
     filteredTasks = todolistTasks.filter((task) => task.isDone)
   }
-
   return (
     <>
-      {filteredTasks.length === 0 ? (
+      {filteredTasks?.length === 0 ? (
         <p>Тасок нет</p>
       ) : (
         <List>
-          {filteredTasks.map((task) => (
+          {filteredTasks?.map((task) => (
             <TaskItem key={task.id} task={task} todolistId={id} />
           ))}
         </List>
