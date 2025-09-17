@@ -15,6 +15,13 @@ export const todolistsSlice = createSlice({
       .addCase(fetchTodolistsTC.rejected, (_state, _action) => {
         // обработка ошибки при запросе за тудулистами
       })
+      .addCase(changeTodolistTitleTC.fulfilled, (state, action) => {
+        debugger
+        const index = state.findIndex((todolist) => todolist.id === action.payload.id)
+        if (index !== -1) {
+          state[index].title = action.payload.title
+        }
+      })
   },
   reducers: (create) => ({
     // setTodolistsAC: create.reducer<{ todolists: Todolist[] }>((_state, action) => {
@@ -39,12 +46,12 @@ export const todolistsSlice = createSlice({
         })
       },
     ),
-    changeTodolistTitleAC: create.reducer<{ id: string; title: string }>((state, action) => {
-      const index = state.findIndex((todolist) => todolist.id === action.payload.id)
-      if (index !== -1) {
-        state[index].title = action.payload.title
-      }
-    }),
+    // changeTodolistTitleAC: create.reducer<{ id: string; title: string }>((state, action) => {
+    //   const index = state.findIndex((todolist) => todolist.id === action.payload.id)
+    //   if (index !== -1) {
+    //     state[index].title = action.payload.title
+    //   }
+    // }),
     changeTodolistFilterAC: create.reducer<{ id: string; filter: FilterValues }>((state, action) => {
       const todolist = state.find((todolist) => todolist.id === action.payload.id)
       if (todolist) {
@@ -67,7 +74,22 @@ export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTo
   }
 })
 
-export const { deleteTodolistAC, createTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC } =
+export const changeTodolistTitleTC = createAsyncThunk(
+  `${todolistsSlice.name}/changeTodolistTitleTC`,
+  async (payload: { id: string; title: string }, thunkAPI) => {
+    debugger
+    // const { id, title } = payload
+    const { rejectWithValue } = thunkAPI
+    try {
+      await todolistsApi.changeTodolistTitle(payload)
+      return payload
+    } catch (error) {
+      return rejectWithValue(null)
+    }
+  },
+)
+
+export const { deleteTodolistAC, createTodolistAC, changeTodolistFilterAC } =
   todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
 
