@@ -6,11 +6,15 @@ export const todolistsSlice = createSlice({
   name: "todolists",
   initialState: [] as DomainTodolist[],
   extraReducers: (builder) => {
-    builder.addCase(fetchTodolistsTC.fulfilled, (_state, action) => {
-      return action.payload.todolists.map((tl) => {
-        return { ...tl, filter: "all" }
+    builder
+      .addCase(fetchTodolistsTC.fulfilled, (_state, action) => {
+        return action.payload.todolists.map((tl) => {
+          return { ...tl, filter: "all" }
+        })
       })
-    })
+      .addCase(fetchTodolistsTC.rejected, (_state, _action) => {
+        // обработка ошибки при запросе за тудулистами
+      })
   },
   reducers: (create) => ({
     // setTodolistsAC: create.reducer<{ todolists: Todolist[] }>((_state, action) => {
@@ -59,7 +63,7 @@ export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTo
     return { todolists: newTodolists } // вместо dispatch(setTodolistsAC({ todolists: newTodolists })) и отлавливаем это значение в extraReducers
   } catch (error) {
     // console.log(error)
-    return rejectWithValue(error)
+    return rejectWithValue(null)
   }
 })
 
