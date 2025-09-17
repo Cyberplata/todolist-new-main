@@ -1,15 +1,23 @@
+import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
-import { createSlice, nanoid } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit"
 
 export const todolistsSlice = createSlice({
   name: "todolists",
   initialState: [] as DomainTodolist[],
-  reducers: (create) => ({
-    setTodolistsAC: create.reducer<{ todolists: Todolist[] }>((_state, action) => {
+  extraReducers: (builder) => {
+    builder.addCase(fetchTodolistsTC.fulfilled, (_state, action) => {
       return action.payload.todolists.map((tl) => {
         return { ...tl, filter: "all" }
       })
-    }),
+    })
+  },
+  reducers: (create) => ({
+    // setTodolistsAC: create.reducer<{ todolists: Todolist[] }>((_state, action) => {
+    //   return action.payload.todolists.map((tl) => {
+    //     return { ...tl, filter: "all" }
+    //   })
+    // }),
     deleteTodolistAC: create.reducer<{ id: string }>((state, action) => {
       const index = state.findIndex((todolist) => todolist.id === action.payload.id)
       if (index !== -1) {
@@ -42,15 +50,22 @@ export const todolistsSlice = createSlice({
   }),
 })
 
-export const { deleteTodolistAC, createTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC, setTodolistsAC } =
+// TC
+export const fetchTodolistsTC = createAsyncThunk(`${todolistsSlice.name}/fetchTodolistsTC`, async (_arg, thunkAPI) => {
+  const { rejectWithValue } = thunkAPI
+  try {
+    const res = await todolistsApi.getTodolists()
+    const newTodolists = res.data
+    return { todolists: newTodolists } // вместо dispatch(setTodolistsAC({ todolists: newTodolists })) и отлавливаем это значение в extraReducers
+  } catch (error) {
+    // console.log(error)
+    return rejectWithValue(error)
+  }
+})
+
+export const { deleteTodolistAC, createTodolistAC, changeTodolistTitleAC, changeTodolistFilterAC } =
   todolistsSlice.actions
 export const todolistsReducer = todolistsSlice.reducer
-
-// export type Todolist = {
-//   id: string
-//   title: string
-//   filter: FilterValues
-// }
 
 export type DomainTodolist = Todolist & {
   filter: FilterValues
