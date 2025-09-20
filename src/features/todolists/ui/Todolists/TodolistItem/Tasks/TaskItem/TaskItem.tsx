@@ -1,10 +1,11 @@
 import { EditableSpan } from "@/common/components/EditableSpan/EditableSpan"
+import { TaskStatus } from "@/common/enums"
 import { useAppDispatch } from "@/common/hooks"
+import type { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
 import {
   changeTaskStatusAC,
   changeTaskTitleAC,
   deleteTaskAC,
-  type Task,
 } from "@/features/todolists/model/tasks-slice.ts"
 import DeleteIcon from "@mui/icons-material/Delete"
 import Checkbox from "@mui/material/Checkbox"
@@ -14,7 +15,7 @@ import type { ChangeEvent } from "react"
 import { getListItemSx } from "./TaskItem.styles"
 
 type Props = {
-  task: Task
+  task: DomainTask
   todolistId: string
 }
 
@@ -34,10 +35,12 @@ export const TaskItem = ({ task, todolistId }: Props) => {
     dispatch(changeTaskTitleAC({ todolistId, taskId: task.id, title }))
   }
 
+  const isTaskCompleted = task.status === TaskStatus.Completed
+
   return (
-    <ListItem sx={getListItemSx(task.isDone)}>
+    <ListItem sx={getListItemSx(isTaskCompleted)}>
       <div>
-        <Checkbox checked={task.isDone} onChange={changeTaskStatus} />
+        <Checkbox checked={isTaskCompleted} onChange={changeTaskStatus} />
         <EditableSpan value={task.title} onChange={changeTaskTitle} />
       </div>
       <IconButton onClick={deleteTask}>
