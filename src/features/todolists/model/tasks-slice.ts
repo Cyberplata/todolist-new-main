@@ -1,7 +1,8 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
+import { RootState } from "@/app/store.ts"
 import { createAppSlice } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
-import type { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
+import type { DomainTask, UpdateTaskModel } from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "./todolists-slice.ts"
 
 export const tasksSlice = createAppSlice({
@@ -110,6 +111,45 @@ export const tasksSlice = createAppSlice({
     //     },
     //   },
     // ),
+
+    updateTaskTC: create.asyncThunk(
+      async (
+        payload: { todolistId: string; taskId: string; domainModel: Partial<UpdateTaskModel> },
+        { dispatch, getState, rejectWithValue },
+      ) => {
+        const { todolistId, taskId, domainModel } = payload
+
+        const allState = getState() as RootState
+        const allTodolistTasks = allState.tasks[todolistId]
+        const task = allTodolistTasks.find((task) => task.id === taskId)
+
+        if (!task) {
+          return rejectWithValue(null)
+        }
+
+        try {
+          dispatch(setAppStatusAC({ status: "loading" }))
+          const res = await tasksApi.updateTask({ todolistId: todolistId, taskId: taskId, domainModel })
+          dispatch(setAppStatusAC({ status: "succeeded" }))
+          const newTask = res.data.data.item
+          return { task: newTask }
+        } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
+          return rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          const { title, status, todoListId, id } = action.payload.task
+          const task = state[todoListId].find((task) => task.id === id)
+          if (task) {
+            task.title = title
+            task.status = status
+          }
+        },
+      },
+    ),
+
     // var2 - Решение через передачу task через props в TaskItem в changeTaskStatusTC
     // _changeTaskStatusTC: create.asyncThunk(
     //   async (task: DomainTask, thunkAPI) => {
@@ -141,6 +181,7 @@ export const tasksSlice = createAppSlice({
     //     },
     //   },
     // ),
+
     // var3 - передаём всю task в model, так как бэк позволяет, хотя должен выдать ошибку
     changeTaskStatusTC: create.asyncThunk(
       async (task: DomainTask, { rejectWithValue, dispatch }) => {
@@ -165,12 +206,37 @@ export const tasksSlice = createAppSlice({
         },
       },
     ),
-    changeTaskTitleAC: create.reducer<{ todolistId: string; taskId: string; title: string }>((state, action) => {
-      const task = state[action.payload.todolistId].find((task) => task.id === action.payload.taskId)
-      if (task) {
-        task.title = action.payload.title
-      }
-    }),
+    changeTaskTitleTC: create.asyncThunk(
+      async (task: DomainTask, { rejectWithValue, dispatch }) => {
+        try {
+          dispatch(setAppStatusAC({ status: "loading" }))
+          const res = await tasksApi.updateTask({ todolistId: task.todoListId, taskId: task.id, model: task })
+          debugger
+          dispatch(setAppStatusAC({ status: "succeeded" }))
+          const newTask = res.data.data.item
+          return { task: newTask }
+        } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
+          return rejectWithValue(null)
+        }
+      },
+      {
+        fulfilled: (state, action) => {
+          debugger
+          const newTask = action.payload.task
+          const task = state[newTask.todoListId].find((task) => task.id === newTask.id)
+          if (task) {
+            task.title = newTask.title
+          }
+        },
+      },
+    ),
+    // changeTaskTitleAC: create.reducer<{ todolistId: string; taskId: string; title: string }>((state, action) => {
+    //   const task = state[action.payload.todolistId].find((task) => task.id === action.payload.taskId)
+    //   if (task) {
+    //     task.title = action.payload.title
+    //   }
+    // }),
   }),
   extraReducers: (builder) => {
     builder
@@ -183,7 +249,8 @@ export const tasksSlice = createAppSlice({
   },
 })
 
-export const { fetchTasksTC, createTaskTC, deleteTaskTC, changeTaskStatusTC, changeTaskTitleAC } = tasksSlice.actions
+export const { fetchTasksTC, createTaskTC, deleteTaskTC, changeTaskStatusTC, changeTaskTitleTC, updateTaskTC } =
+  tasksSlice.actions
 export const tasksReducer = tasksSlice.reducer
 export const { selectTasks } = tasksSlice.selectors
 
