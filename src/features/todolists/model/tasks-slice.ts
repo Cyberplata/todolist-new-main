@@ -1,3 +1,4 @@
+import { setAppStatusAC } from "@/app/app-slice.ts"
 import { createAppSlice } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
 import type { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
@@ -12,11 +13,14 @@ export const tasksSlice = createAppSlice({
   reducers: (create) => ({
     fetchTasksTC: create.asyncThunk(
       async (todolistId: string, thunkAPI) => {
-        const { rejectWithValue } = thunkAPI
+        const { rejectWithValue, dispatch } = thunkAPI
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           return { todolistId, tasks: res.data.items }
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
@@ -28,11 +32,14 @@ export const tasksSlice = createAppSlice({
     ),
     createTaskTC: create.asyncThunk(
       async (payload: { todolistId: string; title: string }, thunkAPI) => {
-        const { rejectWithValue } = thunkAPI
+        const { rejectWithValue, dispatch } = thunkAPI
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.createTask(payload)
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           return { task: res.data.data.item }
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
@@ -136,12 +143,15 @@ export const tasksSlice = createAppSlice({
     // ),
     // var3 - передаём всю task в model, так как бэк позволяет, хотя должен выдать ошибку
     changeTaskStatusTC: create.asyncThunk(
-      async (task: DomainTask, { rejectWithValue }) => {
+      async (task: DomainTask, { rejectWithValue, dispatch }) => {
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: task.todoListId, taskId: task.id, model: task })
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           const newTask = res.data.data.item
           return { task: newTask }
         } catch (error) {
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },

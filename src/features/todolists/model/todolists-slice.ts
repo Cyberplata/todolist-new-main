@@ -1,3 +1,4 @@
+import { setAppStatusAC } from "@/app/app-slice.ts"
 import { createAppSlice } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
@@ -11,14 +12,6 @@ export const todolistsSlice = createAppSlice({
   },
   extraReducers: (builder) => {
     builder
-      // .addCase(fetchTodolistsTC.fulfilled, (_state, action) => {
-      //   return action.payload.todolists.map((tl) => {
-      //     return { ...tl, filter: "all" }
-      //   })
-      // })
-      .addCase(fetchTodolistsTC.rejected, (_state, _action) => {
-        // обработка ошибки при запросе за тудулистами
-      })
       .addCase(changeTodolistTitleTC.fulfilled, (state, action) => {
         const index = state.findIndex((todolist) => todolist.id === action.payload.id)
         if (index !== -1) {
@@ -43,13 +36,15 @@ export const todolistsSlice = createAppSlice({
   reducers: (create) => ({
     fetchTodolistsTC: create.asyncThunk(
       async (_arg, thunkAPI) => {
-        const { rejectWithValue } = thunkAPI
+        const { rejectWithValue, dispatch } = thunkAPI
         try {
+          dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.getTodolists()
+          dispatch(setAppStatusAC({ status: "succeeded" }))
           const todolists = res.data
-          return { todolists } // вместо dispatch(setTodolistsAC({ todolists: newTodolists })) и отлавливаем это значение в extraReducers
+          return { todolists }
         } catch (error) {
-          // console.log(error)
+          dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
       },
