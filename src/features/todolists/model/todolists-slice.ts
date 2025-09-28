@@ -44,15 +44,13 @@ export const todolistsSlice = createAppSlice({
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return res.data.data.item
           } else {
-            if (res.data.messages.length) {
-              dispatch(setAppErrorAC({ error: res.data.messages[0] }))
-            } else {
-              dispatch(setAppErrorAC({ error: "Some error occurred." }))
-            }
             dispatch(setAppStatusAC({ status: "failed" }))
+            const error = res.data.messages.length ? res.data.messages[0] : "Some error occurred."
+            dispatch(setAppErrorAC({ error }))
             return rejectWithValue(null)
           }
-        } catch (error) {
+        } catch (error: any) {
+          dispatch(setAppErrorAC({ error: error.message }))
           dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
         }
