@@ -1,4 +1,5 @@
-import { setAppStatusAC } from "@/app/app-slice.ts"
+import { setAppErrorAC, setAppStatusAC } from "@/app/app-slice.ts"
+import { ResultCode } from "@/common/enums"
 import type { RequestStatus } from "@/common/types"
 import { createAppSlice } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
@@ -36,11 +37,21 @@ export const todolistsSlice = createAppSlice({
     createTodolistTC: create.asyncThunk(
       async (title: string, thunkAPI) => {
         const { rejectWithValue, dispatch } = thunkAPI
+        dispatch(setAppStatusAC({ status: "loading" }))
+        const res = await todolistsApi.createTodolist(title)
         try {
-          dispatch(setAppStatusAC({ status: "loading" }))
-          const res = await todolistsApi.createTodolist(title)
-          dispatch(setAppStatusAC({ status: "succeeded" }))
-          return res.data.data.item
+          if (res.data.resultCode === ResultCode.Success) {
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            return res.data.data.item
+          } else {
+            if (res.data.messages.length) {
+              dispatch(setAppErrorAC({ error: res.data.messages[0] }))
+            } else {
+              dispatch(setAppErrorAC({ error: "Some error occurred." }))
+            }
+            dispatch(setAppStatusAC({ status: "failed" }))
+            return rejectWithValue(null)
+          }
         } catch (error) {
           dispatch(setAppStatusAC({ status: "failed" }))
           return rejectWithValue(null)
@@ -105,7 +116,7 @@ export const todolistsSlice = createAppSlice({
         todolist.filter = action.payload.filter
       }
     }),
-    changeTodolistEntityStatusAC: create.reducer<{ id: string, entityStatus: RequestStatus }>((state, action) => {
+    changeTodolistEntityStatusAC: create.reducer<{ id: string; entityStatus: RequestStatus }>((state, action) => {
       const todolist = state.find((todolist) => todolist.id === action.payload.id)
       if (todolist) {
         todolist.entityStatus = action.payload.entityStatus
