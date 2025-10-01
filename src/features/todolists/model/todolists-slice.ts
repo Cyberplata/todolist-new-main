@@ -1,7 +1,7 @@
 import { setAppErrorAC, setAppStatusAC } from "@/app/app-slice.ts"
 import { ResultCode } from "@/common/enums"
 import type { RequestStatus } from "@/common/types"
-import { createAppSlice } from "@/common/utils"
+import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import type { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 
@@ -21,8 +21,9 @@ export const todolistsSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "succeeded" }))
           const todolists = res.data
           return { todolists }
-        } catch (error) {
-          dispatch(setAppStatusAC({ status: "failed" }))
+        } catch (error: any) {
+          // dispatch(setAppStatusAC({ status: "failed" }))
+          handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
       },
@@ -65,18 +66,38 @@ export const todolistsSlice = createAppSlice({
       async (payload: { id: string }, thunkAPI) => {
         const { id } = payload
         const { rejectWithValue, dispatch } = thunkAPI
+
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "loading" }))
-          await todolistsApi.deleteTodolist(id)
-          dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { id }
-        } catch (error) {
-          dispatch(setAppStatusAC({ status: "failed" }))
+          const res = await todolistsApi.deleteTodolist(id)
+          if (res.data.resultCode === ResultCode.Success) {
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            return { id }
+          } else {
+            dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "failed" }))
+            handleServerAppError(res.data, dispatch)
+            return rejectWithValue(null)
+          }
+        } catch (error: any) {
           dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "failed" }))
+          handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
       },
+
+      //   try {
+      //     dispatch(setAppStatusAC({ status: "loading" }))
+      //     dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "loading" }))
+      //     await todolistsApi.deleteTodolist(id)
+      //     dispatch(setAppStatusAC({ status: "succeeded" }))
+      //     return { id }
+      //   } catch (error) {
+      //     dispatch(setAppStatusAC({ status: "failed" }))
+      //     dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "failed" }))
+      //     return rejectWithValue(null)
+      //   }
+      // },
       {
         fulfilled: (state, action) => {
           const index = state.findIndex((todolist) => todolist.id === action.payload.id)

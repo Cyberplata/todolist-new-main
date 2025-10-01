@@ -10,4 +10,4 @@ export type BaseResponse<T = {}> = {
   resultCode: number
 }
 
-export type RequestStatus = 'idle' | 'loading' | 'succeeded' | 'failed'
+export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
