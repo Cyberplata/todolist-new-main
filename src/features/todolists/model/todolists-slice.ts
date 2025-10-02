@@ -85,19 +85,6 @@ export const todolistsSlice = createAppSlice({
           return rejectWithValue(null)
         }
       },
-
-      //   try {
-      //     dispatch(setAppStatusAC({ status: "loading" }))
-      //     dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "loading" }))
-      //     await todolistsApi.deleteTodolist(id)
-      //     dispatch(setAppStatusAC({ status: "succeeded" }))
-      //     return { id }
-      //   } catch (error) {
-      //     dispatch(setAppStatusAC({ status: "failed" }))
-      //     dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "failed" }))
-      //     return rejectWithValue(null)
-      //   }
-      // },
       {
         fulfilled: (state, action) => {
           const index = state.findIndex((todolist) => todolist.id === action.payload.id)
@@ -121,7 +108,6 @@ export const todolistsSlice = createAppSlice({
             return rejectWithValue(null)
           }
         } catch (error: any) {
-          debugger
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
