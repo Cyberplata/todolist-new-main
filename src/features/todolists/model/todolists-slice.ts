@@ -112,11 +112,17 @@ export const todolistsSlice = createAppSlice({
         const { rejectWithValue, dispatch } = thunkAPI
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          await todolistsApi.changeTodolistTitle(payload)
-          dispatch(setAppStatusAC({ status: "succeeded" }))
-          return payload
-        } catch (error) {
-          dispatch(setAppStatusAC({ status: "failed" }))
+          const res = await todolistsApi.changeTodolistTitle(payload)
+          if (res.data.resultCode === ResultCode.Success) {
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            return payload
+          } else {
+            handleServerAppError(res.data, dispatch)
+            return rejectWithValue(null)
+          }
+        } catch (error: any) {
+          debugger
+          handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
       },
