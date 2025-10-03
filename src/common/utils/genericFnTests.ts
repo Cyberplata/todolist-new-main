@@ -42,31 +42,56 @@
 // console.log(filterArray(words, startsWithT)) // ["typescript"]
 
 
-// 3. Универсальная функция преобразования элементов массива
-// Напишите дженериковую функцию mapArray, принимающую массив элементов любого типа и функцию-преобразователь (transform), применяющую эту функцию к каждому элементу массива, и возвращающую новый массив с результатами преобразований:
+// // 3. Универсальная функция преобразования элементов массива
+// // Напишите дженериковую функцию mapArray, принимающую массив элементов любого типа и функцию-преобразователь (transform), применяющую эту функцию к каждому элементу массива, и возвращающую новый массив с результатами преобразований:
+//
+// const mapArray = <T, D>(array: T[], transform: (val: T) => D): D[] => {
+//   return array.map(transform)
+// }
+//
+// // Пример 1: Преобразование чисел в строки
+// const numbers = [1, 2, 3, 4]
+// const transformNumberToString = (num: number) => `Number: ${num}`
+//
+// console.log(mapArray(numbers, transformNumberToString)) // ["Number: 1", "Number: 2", "Number: 3", "Number: 4"]
+//
+// // Пример 2: Преобразование строк в их длины
+// const words = ['hello', 'world', 'typescript']
+// const getLength = (word: string) => word.length
+//
+// console.log(mapArray(words, getLength)) // [5, 5, 10]
+//
+// // Пример 3: Преобразование объектов в строки
+// type Person = { name: string; age: number }
+// const people: Person[] = [
+//   { name: 'Agnes', age: 25 },
+//   { name: 'Robert', age: 30 },
+// ]
+// const toDescription = (person: Person) => `${person.name} is ${person.age} years old`
+//
+// console.log(mapArray(people, toDescription)) // ["Agnes is 25 years old", "Robert is 30 years old"]
 
-const mapArray = <T, D>(array: T[], transform: (val: T) => D): D[] => {
-  return array.map(transform)
+
+// 4. Реализация универсальной функции для работы с массивами с использованием дженериков (задача)
+// Необходимо создать дженериковую функцию, принимающую массив любого типа и значение того же типа. Функция должна вернуть массив без изменений, если значение уже есть в массиве, а если нет - новый массив с добавленным значением.
+//
+// Требования:
+//
+// функция должна быть дженериковой и работать с массивами любого типа;
+// для проверки наличия элемента в массиве используйте метод includes;
+// типы массива и элемента должны быть связаны через дженерики;
+// функция должна быть чистой (не должна изменять оригинальный массив):
+
+const updateArray = <T,>(array: T[], value: T): T[] => {
+  return array.includes(value) ? array : [...array, value]
 }
 
-// Пример 1: Преобразование чисел в строки
-const numbers = [1, 2, 3, 4]
-const transformNumberToString = (num: number) => `Number: ${num}`
+// Строки
+const stringArray = ["apple", "banana", "cherry"]
+console.log(updateArray(stringArray, "banana")) // ['apple', 'banana', 'cherry']
+console.log(updateArray(stringArray, "strawberry")) // ['apple', 'banana', 'cherry', 'strawberry']
 
-console.log(mapArray(numbers, transformNumberToString)) // ["Number: 1", "Number: 2", "Number: 3", "Number: 4"]
-
-// Пример 2: Преобразование строк в их длины
-const words = ['hello', 'world', 'typescript']
-const getLength = (word: string) => word.length
-
-console.log(mapArray(words, getLength)) // [5, 5, 10]
-
-// Пример 3: Преобразование объектов в строки
-type Person = { name: string; age: number }
-const people: Person[] = [
-  { name: 'Agnes', age: 25 },
-  { name: 'Robert', age: 30 },
-]
-const toDescription = (person: Person) => `${person.name} is ${person.age} years old`
-
-console.log(mapArray(people, toDescription)) // ["Agnes is 25 years old", "Robert is 30 years old"]
+// Числа
+const numberArray = [1, 2, 3]
+console.log(updateArray(numberArray, 2)) // [1, 2, 3]
+console.log(updateArray(numberArray, 4)) // [1, 2, 3, 4]
