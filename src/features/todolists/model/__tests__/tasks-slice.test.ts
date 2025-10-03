@@ -1,4 +1,5 @@
 import { TaskPriority, TaskStatus } from "@/common/enums/enums.ts"
+import type { RequestStatus } from "@/common/types"
 import type { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
 import { beforeEach, expect, test } from "vitest"
@@ -13,6 +14,7 @@ const taskDefaultValues = {
   startDate: "",
   priority: TaskPriority.Low,
   order: 0,
+  entityStatus: "idle" as RequestStatus
 }
 
 const tasksForTodolist1 = [
@@ -57,6 +59,7 @@ test("correct task should be created at correct array", () => {
   }
 
   const actionPayload = { task: newTaskForCreate }
+
   const endState = tasksReducer(
     startState,
     createTaskTC.fulfilled(actionPayload, "requestId", {
@@ -135,90 +138,3 @@ test("property with todolistId should be deleted", () => {
   expect(keys.length).toBe(1)
   expect(endState["todolistId2"]).toBeUndefined()
 })
-
-
-// test("array should be created for new todolist", () => {
-//   const endState = tasksReducer(startState, createTodolistTC.fulfilled("New todolist"))
-//
-//   const keys = Object.keys(endState)
-//   const newKey = keys.find((k) => k !== "todolistId1" && k !== "todolistId2")
-//   if (!newKey) {
-//     throw Error("New key should be added")
-//   }
-//
-//   expect(keys.length).toBe(3)
-//   expect(endState[newKey]).toEqual([])
-// })
-
-// test("property with todolistId should be deleted", () => {
-//   const endState = tasksReducer(startState, deleteTodolistTC({ id: "todolistId2" }))
-//
-//   const keys = Object.keys(endState)
-//
-//   expect(keys.length).toBe(1)
-//   expect(endState["todolistId2"]).not.toBeDefined()
-//   // or
-//   expect(endState["todolistId2"]).toBeUndefined()
-// })
-
-// const newTask: DomainTask = {
-//   id: "3",
-//   title: "juice",
-//   todoListId: "todolistId2",
-//   status: TaskStatus.New,
-//   description: "",
-//   startDate: "",
-//   deadline: "",
-//   addedDate: "",
-//   order: 0,
-//   priority: TaskPriority.Low,
-// }
-
-// test("correct task should be created at correct array", () => {
-//   const { todoListId: todolistId, title } = newTask
-//   const actionPayload = { task: newTask }
-//   const endState = tasksReducer(startState, createTaskTC.fulfilled(actionPayload, "requestId", { todolistId, title }))
-//
-//   expect(endState.todolistId1.length).toBe(3)
-//   expect(endState.todolistId2.length).toBe(4)
-//   expect(endState.todolistId2[0].id).toBeDefined()
-//   expect(endState.todolistId2[0].title).toBe("juice")
-//   expect(endState.todolistId2[0].status).toBe(TaskStatus.New)
-// })
-
-// test("correct task should change its status and title", () => {
-//   const { todoListId, id } = newTask
-//   // создаём изменённую таску, как будто с бэка вернулась
-//   const updatedTask: DomainTask = {
-//     ...newTask,
-//     status: TaskStatus.New,
-//     title: "juice",
-//     todoListId,
-//     // id: "3"
-//   }
-//   const actionPayload = { task: updatedTask }
-//
-//   const UpdateTaskModel: Partial<UpdateTaskModel> = {
-//     description: newTask.description,
-//     title: newTask.title,
-//     status: TaskStatus.New,
-//     priority: TaskPriority.Low,
-//     startDate: newTask.startDate,
-//     deadline: newTask.deadline,
-//   }
-//
-//   // аргумент, который мы передаём в санку (как бы "на сервер")
-//   const arg = {
-//     todolistId: todoListId,
-//     taskId: id,
-//     domainModel: UpdateTaskModel,
-//   }
-//
-//   const endState = tasksReducer(
-//     startState,
-//     updateTaskTC.fulfilled(actionPayload, "requestId", arg)
-//   )
-//
-//   expect(endState[todoListId].find(t => t.id === id)?.status).toBe(TaskStatus.New)
-//   expect(endState[todoListId].find(t => t.id === id)?.title).toBe("juice")
-// })
