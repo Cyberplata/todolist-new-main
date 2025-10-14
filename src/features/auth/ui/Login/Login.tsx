@@ -18,7 +18,6 @@ export const Login = () => {
   const theme = getTheme(themeMode)
 
   const {
-    register,
     handleSubmit,
     reset,
     control,
@@ -55,20 +54,46 @@ export const Login = () => {
             </p>
           </FormLabel>
           <FormGroup>
-            <TextField
-              label="Email"
-              margin="normal"
-              error={!!errors.email}
-              {...register("email", {
+            <Controller
+              name="email"
+              control={control}
+              rules={{
                 required: "Email is required",
                 pattern: {
                   value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
                   message: "Incorrect email address",
                 },
-              })}
+              }}
+              render={({ field }) => (
+                <TextField {...field} type="email" label="Email" margin="normal" error={!!errors.email} />
+              )}
             />
             {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
-            <TextField type="password" label="Password" margin="normal" {...register("password")} />
+            {/*no control input ❌❌❌*/}
+            {/*<TextField type="password" label="Password" margin="normal" {...register("password")} />*/}
+            {/* control ✅✅✅*/}
+            <Controller
+              name="password"
+              control={control}
+              rules={{
+                required: "Password is required",
+                pattern: {
+                  value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                  message: "Password must be at least 6 characters and include letters and numbers",
+                },
+              }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  type="password"
+                  label="Password"
+                  margin="normal"
+                  error={!!errors.password}
+                  // helperText={errors.password?.message} // 👈 сразу выводим ошибку под полем
+                />
+              )}
+            />
+            {errors.password && <span className={styles.errorMessage}>{errors.password.message}</span>}
             <FormControlLabel
               label="Remember me"
               control={
