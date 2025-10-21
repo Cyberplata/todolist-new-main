@@ -1,6 +1,8 @@
 import { selectThemeMode } from "@/app/app-slice"
 import { useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
+import { type LoginRequest, loginSchema } from "@/features/auth/lib/schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
 import FormControl from "@mui/material/FormControl"
@@ -22,9 +24,12 @@ export const Login = () => {
     reset,
     control,
     formState: { errors },
-  } = useForm<LoginInputs>({ defaultValues: { email: "", password: "", rememberMe: false } })
+  } = useForm<LoginRequest>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "", rememberMe: false },
+  })
 
-  const onSubmit: SubmitHandler<LoginInputs> = (data) => {
+  const onSubmit: SubmitHandler<LoginRequest> = (data) => {
     console.log(data)
     reset()
   }
@@ -59,13 +64,13 @@ export const Login = () => {
               control={control}
               rules={{
                 required: "Email is required",
-                pattern: {
-                  value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                  message: "Incorrect email address",
-                },
+                // pattern: {
+                //   value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                //   message: "Incorrect email address",
+                // },
               }}
               render={({ field }) => (
-                <TextField {...field} type="email" label="Email" margin="normal" error={!!errors.email} />
+                <TextField {...field} label="Email" margin="normal" error={!!errors.email} />
               )}
             />
             {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
@@ -77,10 +82,10 @@ export const Login = () => {
               control={control}
               rules={{
                 required: "Password is required",
-                pattern: {
-                  value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
-                  message: "Password must be at least 6 characters and include letters and numbers",
-                },
+                // pattern: {
+                //   value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                //   message: "Password must be at least 6 characters and include letters and numbers",
+                // },
               }}
               render={({ field }) => (
                 <TextField
@@ -89,7 +94,6 @@ export const Login = () => {
                   label="Password"
                   margin="normal"
                   error={!!errors.password}
-                  // helperText={errors.password?.message} // 👈 сразу выводим ошибку под полем
                 />
               )}
             />
@@ -117,10 +121,4 @@ export const Login = () => {
       </form>
     </Grid>
   )
-}
-
-type LoginInputs = {
-  email: string
-  password: string
-  rememberMe: boolean
 }
