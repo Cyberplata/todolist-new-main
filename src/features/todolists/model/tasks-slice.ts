@@ -4,7 +4,11 @@ import { ResultCode } from "@/common/enums/enums.ts"
 import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
-import type { DomainTask, UpdateTaskModel } from "@/features/todolists/api/tasksApi.types.ts"
+import {
+  type DomainTask,
+  getTasksResponseSchema,
+  type UpdateTaskModel,
+} from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "./todolists-slice.ts"
 
 export const tasksSlice = createAppSlice({
@@ -20,9 +24,13 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
+          const parseResponse = getTasksResponseSchema.parse(res.data) // // Парсим весь ответ 💎
+          // domainTaskSchema.array().parse(res.data.items) // 💎
           dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { todolistId, tasks: res.data.items }
-        } catch (error) {
+          return { todolistId, tasks: parseResponse.items }
+          // return { todolistId, tasks: res.data.items }
+        } catch (error: any) {
+          // console.log(error)
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
@@ -70,18 +78,18 @@ export const tasksSlice = createAppSlice({
 
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          dispatch(changeTaskEntityStatusAC({todolistId, taskId, entityStatus: "loading"}))
+          dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "loading" }))
           const res = await tasksApi.deleteTask(payload)
           if (res.data.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
           } else {
-            dispatch(changeTaskEntityStatusAC({todolistId, taskId, entityStatus: "failed"}))
+            dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "failed" }))
             handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
           }
         } catch (error: any) {
-          dispatch(changeTaskEntityStatusAC({todolistId, taskId, entityStatus: "failed"}))
+          dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "failed" }))
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
