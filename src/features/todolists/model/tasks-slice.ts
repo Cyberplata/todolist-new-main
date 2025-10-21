@@ -24,10 +24,10 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
-          const parseResponse = getTasksResponseSchema.parse(res.data) // // Парсим весь ответ 💎
+          const parseRes = getTasksResponseSchema.parse(res.data) // Парсим весь ответ 💎
           // domainTaskSchema.array().parse(res.data.items) // 💎
           dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { todolistId, tasks: parseResponse.items }
+          return { todolistId, tasks: parseRes.items }
           // return { todolistId, tasks: res.data.items }
         } catch (error: any) {
           // console.log(error)

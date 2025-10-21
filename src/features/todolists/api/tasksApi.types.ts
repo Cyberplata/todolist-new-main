@@ -1,4 +1,5 @@
 import { TaskPriority, TaskStatus } from "@/common/enums"
+import { BaseResponseSchema } from "@/common/types"
 import { z } from "zod/v4"
 
 // Schemas for API responses
@@ -13,26 +14,31 @@ export const domainTaskSchema = z.object({
   todoListId: z.string(),
   order: z.int(),
   addedDate: z.iso.datetime({ local: true }),
-  // addedDate: z.string(),
 })
 export const getTasksResponseSchema = z.object({
   error: z.string().nullable(),
   totalCount: z.number(),
   items: z.array(domainTaskSchema),
 })
+export const createTasksSchema = BaseResponseSchema(z.object({ item: domainTaskSchema }))
+export const updateTaskSchema = BaseResponseSchema(z.object({ item: domainTaskSchema }))
+export const deleteTaskSchema = BaseResponseSchema(z.object({}))
+export const updateTaskModelSchema = z.object({
+  description: z.string().nullable(),
+  title: z.string(),
+  status: z.enum(TaskStatus),
+  priority: z.enum(TaskPriority),
+  startDate: z.string().nullable(),
+  deadline: z.string().nullable(),
+})
 
 // Types for API responses
 export type DomainTask = z.infer<typeof domainTaskSchema>
 export type GetTasksResponse = z.infer<typeof getTasksResponseSchema>
-
-export type UpdateTaskModel = {
-  description: string | null
-  startDate: string | null
-  deadline: string | null
-  title: string
-  status: TaskStatus
-  priority: TaskPriority
-}
+export type CreateTasks = z.infer<typeof createTasksSchema>
+export type UpdateTasks = z.infer<typeof updateTaskSchema>
+export type DeleteTasks = z.infer<typeof deleteTaskSchema>
+export type UpdateTaskModel = z.infer<typeof updateTaskModelSchema>
 
 
 // export type DomainTask = {
@@ -47,9 +53,18 @@ export type UpdateTaskModel = {
 //   order: number
 //   addedDate: string
 // }
-
+//
 // export type GetTasksResponse = {
 //   error: string | null
 //   totalCount: number
 //   items: DomainTask[]
+// }
+//
+// export type UpdateTaskModel = {
+//   description: string | null
+//   startDate: string | null
+//   deadline: string | null
+//   title: string
+//   status: TaskStatus
+//   priority: TaskPriority
 // }
