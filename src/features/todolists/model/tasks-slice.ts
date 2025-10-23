@@ -5,9 +5,12 @@ import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
 import {
+  createTasksSchema,
+  deleteTaskSchema,
   type DomainTask,
   getTasksResponseSchema,
   type UpdateTaskModel,
+  updateTaskSchema,
 } from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "./todolists-slice.ts"
 
@@ -24,20 +27,23 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
+
+          // 🚨 ТЕСТОВЫЙ ВЫБРОС ZodError
+          // 💬 Здесь точно выбросит ZodError, потому что title должен быть string
+          // const fakeInvalidData = { items: [{ title: 123 }], totalCount: 1, error: null }
+          // getTasksResponseSchema.parse(fakeInvalidData)
+
           const parseRes = getTasksResponseSchema.parse(res.data) // Парсим весь ответ 💎
-          // domainTaskSchema.array().parse(res.data.items) // 💎
           dispatch(setAppStatusAC({ status: "succeeded" }))
           return { todolistId, tasks: parseRes.items }
-          // return { todolistId, tasks: res.data.items }
         } catch (error: any) {
-          // console.log(error)
+          console.error('ERROR CATCHED:', error)
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
       },
       {
         fulfilled: (state, action) => {
-          // state[action.payload.todolistId] = action.payload.tasks
           state[action.payload.todolistId] = action.payload.tasks.map((tl) => ({
             ...tl,
             filter: "all",
@@ -52,11 +58,13 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.createTask(payload)
-          if (res.data.resultCode === ResultCode.Success) {
+          const parseRes = createTasksSchema.parse(res.data)
+          if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
-            return { task: res.data.data.item }
+            const newTask = parseRes.data.item
+            return { task: newTask }
           } else {
-            handleServerAppError(res.data, dispatch)
+            handleServerAppError(parseRes, dispatch)
             return rejectWithValue(null)
           }
         } catch (error: any) {
@@ -80,12 +88,13 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "loading" }))
           const res = await tasksApi.deleteTask(payload)
-          if (res.data.resultCode === ResultCode.Success) {
+          const parseRes = deleteTaskSchema.parse(res.data)
+          if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
           } else {
             dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "failed" }))
-            handleServerAppError(res.data, dispatch)
+            handleServerAppError(parseRes, dispatch)
             return rejectWithValue(null)
           }
         } catch (error: any) {
@@ -120,12 +129,13 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todolistId, taskId: taskId, domainModel })
-          if (res.data.resultCode === ResultCode.Success) {
+          const parseRes = updateTaskSchema.parse(res.data)
+          if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
-            const newTask = res.data.data.item
+            const newTask = parseRes.data.item
             return { task: newTask }
           } else {
-            handleServerAppError(res.data, dispatch)
+            handleServerAppError(parseRes, dispatch)
             return rejectWithValue(null)
           }
         } catch (error: any) {

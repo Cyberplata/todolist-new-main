@@ -20,6 +20,7 @@ export const getTasksResponseSchema = z.object({
   totalCount: z.number(),
   items: z.array(domainTaskSchema),
 })
+// export const createTasksSchema = BaseResponseSchema(z.object({ }))
 export const createTasksSchema = BaseResponseSchema(z.object({ item: domainTaskSchema }))
 export const updateTaskSchema = BaseResponseSchema(z.object({ item: domainTaskSchema }))
 export const deleteTaskSchema = BaseResponseSchema(z.object({}))
