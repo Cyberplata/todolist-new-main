@@ -4,11 +4,10 @@ import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import {
-  changeTodolistTitleSchema,
-  createTodolistsSchema,
-  deleteTodolistSchema,
+  createTodolistSchema,
+  defaultResponseSchema,
+  getTodolistsSchema,
   type Todolist,
-  todolistSchema,
 } from "@/features/todolists/api/todolistsApi.types.ts"
 
 export const todolistsSlice = createAppSlice({
@@ -24,12 +23,12 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.getTodolists()
-          const parseRes = todolistSchema.array().parse(res.data)
+          const parseRes = getTodolistsSchema.parse(res.data) // 💎 ZOD
           dispatch(setAppStatusAC({ status: "succeeded" }))
           // const todolists = res.data
           return { todolists: parseRes }
         } catch (error: any) {
-          handleServerNetworkError(error, dispatch)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
@@ -47,7 +46,7 @@ export const todolistsSlice = createAppSlice({
         dispatch(setAppStatusAC({ status: "loading" }))
         try {
           const res = await todolistsApi.createTodolist(title)
-          const parseRes = createTodolistsSchema.parse(res.data)
+          const parseRes = createTodolistSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             const newTodo = parseRes.data.item
@@ -76,7 +75,7 @@ export const todolistsSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "loading" }))
           const res = await todolistsApi.deleteTodolist(id)
-          const parseRes = deleteTodolistSchema.parse(res.data)
+          const parseRes = defaultResponseSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return { id }
@@ -87,7 +86,7 @@ export const todolistsSlice = createAppSlice({
           }
         } catch (error: any) {
           dispatch(changeTodolistEntityStatusAC({ id, entityStatus: "failed" }))
-          handleServerNetworkError(error, dispatch)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
@@ -106,7 +105,7 @@ export const todolistsSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await todolistsApi.changeTodolistTitle(payload)
-          const parseRes = changeTodolistTitleSchema.parse(res.data)
+          const parseRes = defaultResponseSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
@@ -115,7 +114,7 @@ export const todolistsSlice = createAppSlice({
             return rejectWithValue(null)
           }
         } catch (error: any) {
-          handleServerNetworkError(error, dispatch)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },

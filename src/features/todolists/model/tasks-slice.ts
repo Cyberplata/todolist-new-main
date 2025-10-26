@@ -5,12 +5,11 @@ import type { RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
 import {
-  createTasksSchema,
   deleteTaskSchema,
   type DomainTask,
   getTasksResponseSchema,
+  taskOperationResponseSchema,
   type UpdateTaskModel,
-  updateTaskSchema,
 } from "@/features/todolists/api/tasksApi.types.ts"
 import { createTodolistTC, deleteTodolistTC } from "./todolists-slice.ts"
 
@@ -28,17 +27,12 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.getTasks(todolistId)
 
-          // 🚨 ТЕСТОВЫЙ ВЫБРОС ZodError
-          // 💬 Здесь точно выбросит ZodError, потому что title должен быть string
-          // const fakeInvalidData = { items: [{ title: 123 }], totalCount: 1, error: null }
-          // getTasksResponseSchema.parse(fakeInvalidData)
-
-          const parseRes = getTasksResponseSchema.parse(res.data) // Парсим весь ответ 💎
+          const parseRes = getTasksResponseSchema.parse(res.data) // 💎 ZOD
           dispatch(setAppStatusAC({ status: "succeeded" }))
           return { todolistId, tasks: parseRes.items }
         } catch (error: any) {
-          console.error('ERROR CATCHED:', error)
-          handleServerNetworkError(error, dispatch)
+          // console.error('ERROR CATCHED:', error)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
@@ -58,7 +52,7 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.createTask(payload)
-          const parseRes = createTasksSchema.parse(res.data)
+          const parseRes = taskOperationResponseSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             const newTask = parseRes.data.item
@@ -68,7 +62,7 @@ export const tasksSlice = createAppSlice({
             return rejectWithValue(null)
           }
         } catch (error: any) {
-          handleServerNetworkError(error, dispatch)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
@@ -88,7 +82,7 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "loading" }))
           const res = await tasksApi.deleteTask(payload)
-          const parseRes = deleteTaskSchema.parse(res.data)
+          const parseRes = deleteTaskSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
@@ -99,7 +93,7 @@ export const tasksSlice = createAppSlice({
           }
         } catch (error: any) {
           dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "failed" }))
-          handleServerNetworkError(error, dispatch)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
@@ -129,7 +123,7 @@ export const tasksSlice = createAppSlice({
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await tasksApi.updateTask({ todolistId: todolistId, taskId: taskId, domainModel })
-          const parseRes = updateTaskSchema.parse(res.data)
+          const parseRes = taskOperationResponseSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             const newTask = parseRes.data.item
@@ -139,7 +133,7 @@ export const tasksSlice = createAppSlice({
             return rejectWithValue(null)
           }
         } catch (error: any) {
-          handleServerNetworkError(error, dispatch)
+          handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },

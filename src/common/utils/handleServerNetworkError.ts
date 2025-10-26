@@ -1,7 +1,7 @@
 import { setAppErrorAC, setAppStatusAC } from "@/app/app-slice.ts"
 import type { Dispatch } from "@reduxjs/toolkit"
 import axios from "axios"
-import { z } from "zod/v4"
+import { z } from "zod"
 
 export const handleServerNetworkError = (dispatch: Dispatch, error: unknown) => {
   let errorMessage

@@ -1,5 +1,31 @@
 import { ResultCode } from "@/common/enums"
-import z from "zod/v4"
+import z from "zod"
+
+// Обычная FieldError схема
+export const fieldErrorSchema = z.object({
+  error: z.string(),
+  field: z.string(),
+})
+
+type FieldError = z.infer<typeof fieldErrorSchema>
+
+export const baseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+  z.object({
+    data: dataSchema,
+    fieldsErrors: z.array(fieldErrorSchema),
+    messages: z.array(z.string()),
+    resultCode: z.enum(ResultCode),
+  })
+
+export type BaseResponse<T = {}> = { //
+  data: T
+  // fieldsErrors: z.infer<typeof FieldErrorSchema>[]
+  fieldsErrors: FieldError[]
+  messages: string[]
+  resultCode: ResultCode
+}
+
+export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
 
 // export type FieldError = {
 //   error: string
@@ -12,29 +38,3 @@ import z from "zod/v4"
 //   messages: string[]
 //   resultCode: number
 // }
-
-
-// Обычная FieldError схема
-export const FieldErrorSchema = z.object({
-  error: z.string(),
-  field: z.string(),
-})
-
-// Функция, возвращающая BaseResponseSchema с generic'ом для data
-// Вариант 1 (самый честный) — сделать функцию перегружаемой:
-export const BaseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
-  z.object({
-    data: dataSchema,
-    fieldsErrors: z.array(FieldErrorSchema),
-    messages: z.array(z.string()),
-    resultCode: z.enum(ResultCode),
-  })
-
-export type BaseResponse<T = {}> = { //
-  data: T
-  fieldsErrors: z.infer<typeof FieldErrorSchema>[]
-  messages: string[]
-  resultCode: ResultCode
-}
-
-export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
