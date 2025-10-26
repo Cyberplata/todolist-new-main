@@ -1,11 +1,10 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
 import { ResultCode } from "@/common/enums"
-import type { RequestStatus } from "@/common/types"
+import { defaultResponseSchema, type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import {
   createTodolistSchema,
-  defaultResponseSchema,
   getTodolistsSchema,
   type Todolist,
 } from "@/features/todolists/api/todolistsApi.types.ts"

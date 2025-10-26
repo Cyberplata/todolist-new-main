@@ -1,14 +1,11 @@
 import { ResultCode } from "@/common/enums"
 import z from "zod"
 
-// Обычная FieldError схема
+// Schemas for API responses
 export const fieldErrorSchema = z.object({
   error: z.string(),
   field: z.string(),
 })
-
-type FieldError = z.infer<typeof fieldErrorSchema>
-
 export const baseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
   z.object({
     data: dataSchema,
@@ -16,14 +13,17 @@ export const baseResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     messages: z.array(z.string()),
     resultCode: z.enum(ResultCode),
   })
+export const defaultResponseSchema = baseResponseSchema(z.object({}))
 
+// Types for API responses
+type FieldError = z.infer<typeof fieldErrorSchema>
 export type BaseResponse<T = {}> = { //
   data: T
-  // fieldsErrors: z.infer<typeof FieldErrorSchema>[]
   fieldsErrors: FieldError[]
   messages: string[]
   resultCode: ResultCode
 }
+export type DefaultResponse = z.infer<typeof defaultResponseSchema>
 
 export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
 

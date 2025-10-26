@@ -10,12 +10,10 @@ export const todolistSchema = z.object({
 })
 export const getTodolistsSchema = z.array(todolistSchema)
 export const createTodolistSchema = baseResponseSchema(z.object({ item: todolistSchema }))
-export const defaultResponseSchema = baseResponseSchema(z.object({}))
 
 // Types for API responses
 export type Todolist = z.infer<typeof todolistSchema>
 export type CreateTodolist = z.infer<typeof createTodolistSchema>
-export type DefaultResponse = z.infer<typeof defaultResponseSchema>
 
 // export type DeleteTodolist = z.infer<typeof deleteTodolistSchema>
 // export type ChangeTodolistTitle = z.infer<typeof changeTodolistTitleSchema>

@@ -22,7 +22,6 @@ export const getTasksResponseSchema = z.object({
 })
 // Create and update task
 export const taskOperationResponseSchema = baseResponseSchema(z.object({ item: domainTaskSchema }))
-export const deleteTaskSchema = baseResponseSchema(z.object({}))
 export const updateTaskModelSchema = z.object({
   description: z.string().nullable(),
   startDate: z.string().nullable(),
@@ -36,14 +35,14 @@ export const updateTaskModelSchema = z.object({
 export type DomainTask = z.infer<typeof domainTaskSchema>
 export type GetTasksResponse = z.infer<typeof getTasksResponseSchema>
 export type TaskOperationResponse = z.infer<typeof taskOperationResponseSchema>
-export type DeleteTasks = z.infer<typeof deleteTaskSchema>
 export type UpdateTaskModel = z.infer<typeof updateTaskModelSchema>
 
 // export const createTasksSchema = BaseResponseSchema(z.object({ item: domainTaskSchema }))
 // export const updateTaskSchema = BaseResponseSchema(z.object({ item: domainTaskSchema }))
-
+// export const deleteTaskSchema = baseResponseSchema(z.object({}))
 // export type CreateTasks = z.infer<typeof createTasksSchema>
 // export type UpdateTasks = z.infer<typeof updateTaskSchema>
+// export type DeleteTasks = z.infer<typeof deleteTaskSchema>
 
 // export type DomainTask = {
 //   description: string

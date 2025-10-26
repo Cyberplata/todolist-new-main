@@ -1,6 +1,6 @@
 import { instance } from "@/common/instance"
+import type { DefaultResponse } from "@/common/types"
 import type {
-  DeleteTasks,
   GetTasksResponse,
   TaskOperationResponse,
   UpdateTaskModel,
@@ -14,13 +14,12 @@ export const tasksApi = {
     const { todolistId, title } = payload
     return instance.post<TaskOperationResponse>(`/todo-lists/${todolistId}/tasks`, { title })
   },
-  // updateTask(payload: { todolistId: string; taskId: string; model: UpdateTaskModel }) {
   updateTask(payload: { todolistId: string; taskId: string; domainModel: Partial<UpdateTaskModel> }) {
     const { todolistId, taskId, domainModel } = payload
     return instance.put<TaskOperationResponse>(`/todo-lists/${todolistId}/tasks/${taskId}`, domainModel)
   },
   deleteTask(payload: { todolistId: string; taskId: string }) {
     const { todolistId, taskId } = payload
-    return instance.delete<DeleteTasks>(`/todo-lists/${todolistId}/tasks/${taskId}`)
+    return instance.delete<DefaultResponse>(`/todo-lists/${todolistId}/tasks/${taskId}`)
   },
 }

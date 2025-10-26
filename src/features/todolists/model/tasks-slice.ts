@@ -1,11 +1,10 @@
 import { setAppStatusAC } from "@/app/app-slice.ts"
 import { RootState } from "@/app/store.ts"
 import { ResultCode } from "@/common/enums/enums.ts"
-import type { RequestStatus } from "@/common/types"
+import { defaultResponseSchema, type RequestStatus } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { tasksApi } from "@/features/todolists/api/tasksApi.ts"
 import {
-  deleteTaskSchema,
   type DomainTask,
   getTasksResponseSchema,
   taskOperationResponseSchema,
@@ -82,7 +81,7 @@ export const tasksSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           dispatch(changeTaskEntityStatusAC({ todolistId, taskId, entityStatus: "loading" }))
           const res = await tasksApi.deleteTask(payload)
-          const parseRes = deleteTaskSchema.parse(res.data) // 💎 ZOD
+          const parseRes = defaultResponseSchema.parse(res.data) // 💎 ZOD
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return payload
