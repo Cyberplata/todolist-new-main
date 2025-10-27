@@ -1,10 +1,6 @@
 import { instance } from "@/common/instance"
 import type { DefaultResponse } from "@/common/types"
-import type {
-  GetTasksResponse,
-  TaskOperationResponse,
-  UpdateTaskModel,
-} from "@/features/todolists/api/tasksApi.types.ts"
+import { GetTasksResponse, type TaskOperationResponse, type UpdateTaskModel } from "./tasksApi.types"
 
 export const tasksApi = {
   getTasks(todolistId: string) {

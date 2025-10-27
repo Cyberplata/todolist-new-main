@@ -1,9 +1,6 @@
 import { instance } from "@/common/instance"
 import type { DefaultResponse } from "@/common/types"
-import type {
-  CreateTodolist,
-  Todolist,
-} from "@/features/todolists/api/todolistsApi.types.ts"
+import type { CreateTodolist, Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 
 export const todolistsApi = {
   getTodolists() {

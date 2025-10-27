@@ -17,12 +17,13 @@ export const defaultResponseSchema = baseResponseSchema(z.object({}))
 
 // Types for API responses
 type FieldError = z.infer<typeof fieldErrorSchema>
-export type BaseResponse<T = {}> = { //
+export type BaseResponse<T = {}> = {
   data: T
   fieldsErrors: FieldError[]
   messages: string[]
   resultCode: ResultCode
 }
+// deleteTask + deleteTodolist + changeTodolistTitle
 export type DefaultResponse = z.infer<typeof defaultResponseSchema>
 
 export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"
