@@ -1,7 +1,8 @@
 import { selectThemeMode } from "@/app/app-slice"
-import { useAppSelector } from "@/common/hooks"
+import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
 import { type LoginRequest, loginSchema } from "@/features/auth/lib/schemas"
+import { loginTC } from "@/features/auth/model/auth-slice.ts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
@@ -18,6 +19,8 @@ export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
 
   const theme = getTheme(themeMode)
+  const dispatch = useAppDispatch()
+  // const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
   const {
     handleSubmit,
@@ -30,8 +33,9 @@ export const Login = () => {
   })
 
   const onSubmit: SubmitHandler<LoginRequest> = (data) => {
-    console.log(data)
-    reset()
+    // console.log(data)
+    dispatch(loginTC(data))
+    // reset()
   }
 
   return (
@@ -69,9 +73,7 @@ export const Login = () => {
                 //   message: "Incorrect email address",
                 // },
               }}
-              render={({ field }) => (
-                <TextField {...field} label="Email" margin="normal" error={!!errors.email} />
-              )}
+              render={({ field }) => <TextField {...field} label="Email" margin="normal" error={!!errors.email} />}
             />
             {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
             {/*no control input ❌❌❌*/}
@@ -88,13 +90,7 @@ export const Login = () => {
                 // },
               }}
               render={({ field }) => (
-                <TextField
-                  {...field}
-                  type="password"
-                  label="Password"
-                  margin="normal"
-                  error={!!errors.password}
-                />
+                <TextField {...field} type="password" label="Password" margin="normal" error={!!errors.password} />
               )}
             />
             {errors.password && <span className={styles.errorMessage}>{errors.password.message}</span>}
