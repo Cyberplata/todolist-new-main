@@ -1,8 +1,9 @@
 import { selectThemeMode } from "@/app/app-slice"
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
+import { Path } from "@/common/routing"
 import { getTheme } from "@/common/theme"
 import { type LoginRequest, loginSchema } from "@/features/auth/lib/schemas"
-import { loginTC } from "@/features/auth/model/auth-slice.ts"
+import { loginTC, selectIsLoggedIn } from "@/features/auth/model/auth-slice.ts"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Button from "@mui/material/Button"
 import Checkbox from "@mui/material/Checkbox"
@@ -12,15 +13,17 @@ import FormGroup from "@mui/material/FormGroup"
 import FormLabel from "@mui/material/FormLabel"
 import Grid from "@mui/material/Grid2"
 import TextField from "@mui/material/TextField"
+import { useEffect } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
+import { Navigate, useNavigate } from "react-router"
 import styles from "./Login.module.css"
 
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
-
   const theme = getTheme(themeMode)
   const dispatch = useAppDispatch()
-  // const isLoggedIn = useAppSelector(selectIsLoggedIn)
+  const isLoggedIn = useAppSelector(selectIsLoggedIn)
+  const navigate = useNavigate()
 
   const {
     handleSubmit,
@@ -32,10 +35,39 @@ export const Login = () => {
     defaultValues: { email: "", password: "", rememberMe: false },
   })
 
+  // const onSubmit: SubmitHandler<LoginRequest> = (data) => {
+  //   dispatch(loginTC(data)).then((res: any) => {
+  //     if(res.payload.isLoggedIn) {
+  //       navigate(Path.Main)
+  //     }
+  //   })
+  //   // reset()
+  // }
+
+  // var1
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     navigate(Path.Main)
+  //   }
+  // },[isLoggedIn])
+
+  // var2
+  // if (isLoggedIn) {
+  //   return <Navigate to={Path.Main} />
+  // }
+
+  // var3
   const onSubmit: SubmitHandler<LoginRequest> = (data) => {
-    // console.log(data)
     dispatch(loginTC(data))
-    // reset()
+      .unwrap()
+      .then((res: any) => {
+        if (res.payload.isLoggedIn) {
+          navigate(Path.Main)
+        }
+      })
+      .catch((err: any) => {
+        debugger
+      })
   }
 
   return (

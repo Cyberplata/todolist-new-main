@@ -4,7 +4,6 @@ import { createAppSlice, handleServerAppError, handleServerNetworkError } from "
 import { authApi } from "@/features/auth/api/authApi.ts"
 import { loginResponseSchema } from "@/features/auth/api/authApi.types.ts"
 import type { LoginRequest } from "@/features/auth/lib/schemas"
-import { tasksSlice } from "@/features/todolists/model/tasks-slice.ts"
 
 export const authSlice = createAppSlice({
   name: "auth",
@@ -44,5 +43,5 @@ export const authSlice = createAppSlice({
 })
 
 export const { loginTC } = authSlice.actions
-export const authReducer = tasksSlice.reducer
+export const authReducer = authSlice.reducer
 export const { selectIsLoggedIn } = authSlice.selectors
