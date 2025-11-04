@@ -13,21 +13,19 @@ import FormGroup from "@mui/material/FormGroup"
 import FormLabel from "@mui/material/FormLabel"
 import Grid from "@mui/material/Grid2"
 import TextField from "@mui/material/TextField"
-import { useEffect } from "react"
 import { Controller, type SubmitHandler, useForm } from "react-hook-form"
-import { Navigate, useNavigate } from "react-router"
+import { Navigate } from "react-router"
 import styles from "./Login.module.css"
 
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
+  const isLoggedIn = useAppSelector(selectIsLoggedIn)
   const theme = getTheme(themeMode)
   const dispatch = useAppDispatch()
-  const isLoggedIn = useAppSelector(selectIsLoggedIn)
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const {
     handleSubmit,
-    reset,
     control,
     formState: { errors },
   } = useForm<LoginRequest>({
@@ -35,14 +33,15 @@ export const Login = () => {
     defaultValues: { email: "", password: "", rememberMe: false },
   })
 
-  // const onSubmit: SubmitHandler<LoginRequest> = (data) => {
-  //   dispatch(loginTC(data)).then((res: any) => {
-  //     if(res.payload.isLoggedIn) {
-  //       navigate(Path.Main)
-  //     }
-  //   })
-  //   // reset()
-  // }
+  const onSubmit: SubmitHandler<LoginRequest> = (data) => {
+    dispatch(loginTC(data))
+    //   .then((res: any) => {
+    //   if (res.payload.isLoggedIn) {
+    //     navigate(Path.Main)
+    //   }
+    // })
+    // reset()
+  }
 
   // var1
   // useEffect(() => {
@@ -52,24 +51,23 @@ export const Login = () => {
   // },[isLoggedIn])
 
   // var2
-  // if (isLoggedIn) {
-  //   return <Navigate to={Path.Main} />
-  // }
-
-  // var3
-  const onSubmit: SubmitHandler<LoginRequest> = (data) => {
-    dispatch(loginTC(data))
-      .unwrap()
-      .then((res: any) => {
-        if (res.payload.isLoggedIn) {
-          navigate(Path.Main)
-        }
-      })
-      .catch((err: any) => {
-        debugger
-      })
+  if (isLoggedIn) {
+    return <Navigate to={Path.Main} />
   }
 
+  // var3
+  // const onSubmit: SubmitHandler<LoginRequest> = (data) => {
+  //   dispatch(loginTC(data))
+  //     .unwrap()
+  //     .then((res: any) => {
+  //       if (res.payload.isLoggedIn) {
+  //         navigate(Path.Main)
+  //       }
+  //     })
+  //     .catch((err: any) => {
+  //       debugger
+  //     })
+  // }
   return (
     <Grid container justifyContent={"center"}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -100,26 +98,15 @@ export const Login = () => {
               control={control}
               rules={{
                 required: "Email is required",
-                // pattern: {
-                //   value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                //   message: "Incorrect email address",
-                // },
               }}
               render={({ field }) => <TextField {...field} label="Email" margin="normal" error={!!errors.email} />}
             />
             {errors.email && <span className={styles.errorMessage}>{errors.email.message}</span>}
-            {/*no control input ❌❌❌*/}
-            {/*<TextField type="password" label="Password" margin="normal" {...register("password")} />*/}
-            {/* control ✅✅✅*/}
             <Controller
               name="password"
               control={control}
               rules={{
                 required: "Password is required",
-                // pattern: {
-                //   value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
-                //   message: "Password must be at least 6 characters and include letters and numbers",
-                // },
               }}
               render={({ field }) => (
                 <TextField {...field} type="password" label="Password" margin="normal" error={!!errors.password} />
@@ -132,12 +119,7 @@ export const Login = () => {
                 <Controller
                   name={"rememberMe"}
                   control={control}
-                  // var1
                   render={({ field: { value, ...rest } }) => <Checkbox {...rest} checked={value} />}
-                  // var2
-                  // render={({ field: { onChange, value } }) => (
-                  //   <Checkbox onChange={e => onChange(e.target.checked)} checked={value} />
-                  // )}
                 />
               }
             />
