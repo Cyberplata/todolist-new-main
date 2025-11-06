@@ -4,8 +4,9 @@ import { ResultCode } from "@/common/enums"
 import { defaultResponseSchema } from "@/common/types"
 import { createAppSlice, handleServerAppError, handleServerNetworkError } from "@/common/utils"
 import { authApi } from "@/features/auth/api/authApi.ts"
-import { loginResponseSchema } from "@/features/auth/api/authApi.types.ts"
+import { loginResponseSchema, meResponseSchema } from "@/features/auth/api/authApi.types.ts"
 import type { LoginRequest } from "@/features/auth/lib/schemas"
+import { getTodolistsSchema, todolistsApi } from "@/features/todolists/api"
 
 export const authSlice = createAppSlice({
   name: "auth",
@@ -68,6 +69,22 @@ export const authSlice = createAppSlice({
           state.isLoggedIn = action.payload.isLoggedIn
         },
       },
+    ),
+    initializeAppTC: create.asyncThunk(
+      async (_arg, thunkAPI) => {
+        const { rejectWithValue, dispatch } = thunkAPI
+        try {
+          dispatch(setAppStatusAC({ status: "loading" }))
+          const res = await todolistsApi.getTodolists()
+          const parseRes = meResponseSchema.parse(res.data) // 💎 ZOD
+          dispatch(setAppStatusAC({ status: "succeeded" }))
+          return { todolists: parseRes }
+        } catch (error: any) {
+          handleServerNetworkError(dispatch, error)
+          return rejectWithValue(null)
+        }
+      },
+      { fulfilled: (state, action) => {} },
     ),
   }),
 })
