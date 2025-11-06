@@ -23,7 +23,7 @@ export type BaseResponse<T = {}> = {
   messages: string[]
   resultCode: ResultCode
 }
-// deleteTask + deleteTodolist + changeTodolistTitle
+// deleteTask + deleteTodolist + changeTodolistTitle + logout
 export type DefaultResponse = z.infer<typeof defaultResponseSchema>
 
 export type RequestStatus = "idle" | "loading" | "succeeded" | "failed"

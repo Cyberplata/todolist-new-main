@@ -1,6 +1,6 @@
 import { instance } from "@/common/instance"
 import type { DefaultResponse } from "@/common/types"
-import type { LoginResponse } from "@/features/auth/api/authApi.types.ts"
+import type { LoginResponse, MeResponse } from "@/features/auth/api/authApi.types.ts"
 import type { LoginRequest } from "@/features/auth/lib/schemas"
 
 export const authApi = {
@@ -9,6 +9,9 @@ export const authApi = {
     return instance.post<LoginResponse>("auth/login", payload)
   },
   logout() {
-    return instance.delete<DefaultResponse>(`/auth/login/`)
+    return instance.delete<DefaultResponse>(`/auth/login`)
   },
+  me() {
+    return instance.get<MeResponse>("auth/me")
+  }
 }
