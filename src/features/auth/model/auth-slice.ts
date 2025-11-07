@@ -76,8 +76,6 @@ export const authSlice = createAppSlice({
           dispatch(setAppStatusAC({ status: "loading" }))
           const res = await authApi.me()
           const parseRes = meResponseSchema.parse(res.data) // 💎 ZOD
-
-
           if (parseRes.resultCode === ResultCode.Success) {
             dispatch(setAppStatusAC({ status: "succeeded" }))
             return { isLoggedIn: true }
