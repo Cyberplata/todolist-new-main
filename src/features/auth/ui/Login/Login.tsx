@@ -65,7 +65,6 @@ export const Login = () => {
   //       }
   //     })
   //     .catch((err: any) => {
-  //       debugger
   //     })
   // }
   return (

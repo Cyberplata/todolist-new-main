@@ -6,7 +6,6 @@ import { createAppSlice, handleServerAppError, handleServerNetworkError } from "
 import { authApi } from "@/features/auth/api/authApi.ts"
 import { loginResponseSchema, meResponseSchema } from "@/features/auth/api/authApi.types.ts"
 import type { LoginRequest } from "@/features/auth/lib/schemas"
-import { getTodolistsSchema, todolistsApi } from "@/features/todolists/api"
 
 export const authSlice = createAppSlice({
   name: "auth",
@@ -75,20 +74,31 @@ export const authSlice = createAppSlice({
         const { rejectWithValue, dispatch } = thunkAPI
         try {
           dispatch(setAppStatusAC({ status: "loading" }))
-          const res = await todolistsApi.getTodolists()
+          const res = await authApi.me()
           const parseRes = meResponseSchema.parse(res.data) // 💎 ZOD
-          dispatch(setAppStatusAC({ status: "succeeded" }))
-          return { todolists: parseRes }
+
+
+          if (parseRes.resultCode === ResultCode.Success) {
+            dispatch(setAppStatusAC({ status: "succeeded" }))
+            return { isLoggedIn: true }
+          } else {
+            handleServerAppError(parseRes, dispatch)
+            return rejectWithValue(null)
+          }
         } catch (error: any) {
           handleServerNetworkError(dispatch, error)
           return rejectWithValue(null)
         }
       },
-      { fulfilled: (state, action) => {} },
+      {
+        fulfilled: (state, action) => {
+          state.isLoggedIn = action.payload.isLoggedIn
+        },
+      },
     ),
   }),
 })
 
-export const { loginTC, logoutTC } = authSlice.actions
+export const { loginTC, logoutTC, initializeAppTC } = authSlice.actions
 export const authReducer = authSlice.reducer
 export const { selectIsLoggedIn } = authSlice.selectors

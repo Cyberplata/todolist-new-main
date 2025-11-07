@@ -9,6 +9,7 @@ import Grid from "@mui/material/Grid2"
 import { Navigate } from "react-router"
 
 export const Main = () => {
+
   const dispatch = useAppDispatch()
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
